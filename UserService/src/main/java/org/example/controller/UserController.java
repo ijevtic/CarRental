@@ -57,9 +57,9 @@ public class UserController {
 //        return new ResponseEntity<>(token, HttpStatus.OK);
 //    }
 //
-//    @ApiOperation(value = "Proba")
-//    @GetMapping("/proba2")
-//    public ResponseEntity<String> proba2() {
-//        return new ResponseEntity<String>("ok", HttpStatus.OK);
-//    }
+    @ApiOperation(value = "Proba")
+    @GetMapping("/proba2")
+    public ResponseEntity<UserDto> proba2() {
+        return new ResponseEntity<UserDto>(userService.proba(), HttpStatus.OK);
+    }
 }

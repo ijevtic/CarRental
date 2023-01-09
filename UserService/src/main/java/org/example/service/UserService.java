@@ -13,6 +13,8 @@ public interface UserService {
 
     UserDto add(UserCreateDto userCreateDto);
 
+    UserDto proba();
+
     TokenResponseDto login(TokenRequestDto tokenRequestDto);
 }
 

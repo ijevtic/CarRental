@@ -33,8 +33,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserDto> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable)
-                .map(userMapper::userToUserDto);
+        return null;
+//        return userRepository.findAll(pageable)
+//                .map(userMapper::userToUserDto);
     }
 
     @Override
@@ -42,6 +43,15 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.userCreateDtoToUser(userCreateDto);
         userRepository.save(user);
         return userMapper.userToUserDto(user);
+    }
+
+    @Override
+    public UserDto proba() {
+        User u = new User();
+        u.setEmail("ivanjevtic@gmail.com");
+        u.setFirstName("ivan");
+        userRepository.save(u);
+        return null;
     }
 
     @Override
