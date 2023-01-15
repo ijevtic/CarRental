@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 public class UserCreateDto {
 
@@ -18,6 +19,8 @@ public class UserCreateDto {
     private String username;
     @Length(min = 8, max = 20)
     private String password;
+    private Date birthDate;
+    private String phoneNumber;
 
     public String getEmail() {
         return email;
@@ -57,5 +60,21 @@ public class UserCreateDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

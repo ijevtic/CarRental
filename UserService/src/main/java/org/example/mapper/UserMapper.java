@@ -31,7 +31,8 @@ public class UserMapper {
         user.setLastName(userCreateDto.getLastName());
         user.setUsername(userCreateDto.getUsername());
         user.setPassword(userCreateDto.getPassword());
-//        user.setRole(roleRepository.findRoleByName("ROLE_USER").get());
+        user.setRole(roleRepository.findRoleByName("USER").get());
+        user.setEnabled(false);
         return user;
     }
 }

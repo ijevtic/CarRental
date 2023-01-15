@@ -3,7 +3,7 @@ package org.example.controller;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.example.dto.UserDto;
+import org.example.dto.*;
 import org.example.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,26 +40,35 @@ public class UserController {
 //        return new ResponseEntity<>(userService.findAll(pageable), HttpStatus.OK);
     }
 
-//    @ApiOperation(value = "Register user")
-//    @PostMapping
-//    public ResponseEntity<UserDto> saveUser(@RequestBody @Valid UserCreateDto userCreateDto) {
-//        return new ResponseEntity<>(userService.add(userCreateDto), HttpStatus.CREATED);
-//    }
-//
-//    @ApiOperation(value = "Login")
-//    @PostMapping("/login")
-//    public ResponseEntity<TokenResponseDto> loginUser(@RequestBody @Valid TokenRequestDto tokenRequestDto) {
-//        return new ResponseEntity<>(userService.login(tokenRequestDto), HttpStatus.OK);
-//    }
+    @ApiOperation(value = "Register user")
+    @PostMapping
+    public ResponseEntity<String> saveUser(@RequestBody @Valid UserCreateDto userCreateDto) {
+        if(userService.add(userCreateDto)) {
+            return new ResponseEntity<>("User succesfully created!",HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>("User with the same email/username already exists", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @ApiOperation(value = "Login")
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponseDto> loginUser(@RequestBody @Valid TokenRequestDto tokenRequestDto) {
+        return new ResponseEntity<>(userService.login(tokenRequestDto), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Verify")
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyUser(@RequestBody @Valid PendingUserDto pendingUserDto) {
+        if(userService.verifyUser(pendingUserDto)) {
+            return new ResponseEntity<>("User succesfully verified!", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+    }
 //    @ApiOperation(value = "Login")
 //    @GetMapping("/login")
 //    public ResponseEntity<String> proba(@RequestBody @Valid String token) {
 //        return new ResponseEntity<>(token, HttpStatus.OK);
 //    }
 //
-    @ApiOperation(value = "Proba")
-    @GetMapping("/proba2")
-    public ResponseEntity<UserDto> proba2() {
-        return new ResponseEntity<UserDto>(userService.proba(), HttpStatus.OK);
-    }
 }

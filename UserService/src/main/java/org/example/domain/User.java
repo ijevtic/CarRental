@@ -17,6 +17,7 @@ public class User {
     private String email;
     private String phoneNumber;
     private Date birthDate;
+    private boolean enabled;
 
     public Long getId() {
         return id;
@@ -88,5 +89,13 @@ public class User {
 
     public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
