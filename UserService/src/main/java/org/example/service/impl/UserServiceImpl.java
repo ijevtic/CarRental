@@ -13,6 +13,7 @@ import org.example.repository.PendingUserRepository;
 import org.example.repository.UserRepository;
 import org.example.security.service.TokenService;
 import org.example.service.UserService;
+import org.example.util.ServiceResponse;
 import org.example.util.UtilClass;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,6 @@ public class UserServiceImpl implements UserService {
     private TokenService tokenService;
     private UserRepository userRepository;
     private PendingUserRepository pendingUserRepository;
-
     private UserMapper userMapper;
     private PendingUserMapper pendingUserMapper;
 
@@ -41,9 +41,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDto> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable)
-                .map(userMapper::userToUserDto);
+    public ServiceResponse<Page<UserDto>> findAll(Pageable pageable) {
+        return new ServiceResponse<>(userRepository.findAll(pageable).map(userMapper::userToUserDto),
+                "all users", 200);
     }
 
     private UserDto findByUsernameOrEmail(String username, String email) {
@@ -53,33 +53,52 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean add(UserCreateDto userCreateDto) {
+    public ServiceResponse<Boolean> addUser(UserCreateDto userCreateDto) {
         User user = userMapper.userCreateDtoToUser(userCreateDto);
         if(findByUsernameOrEmail(user.getUsername(), user.getEmail()) != null) {
-            return false;
+            return new ServiceResponse<>(null, "user already exists", 400);
         }
         userRepository.save(user);
         PendingUser pendingUser = new PendingUser();
         pendingUser.setEmail(user.getEmail());
         pendingUser.setVerificationCode(UtilClass.generateRandomString());
         pendingUserRepository.save(pendingUser);
-        return true;
+        return new ServiceResponse<>(null, "user added", 200);
     }
 
     @Override
-    public TokenResponseDto login(TokenRequestDto tokenRequestDto) {
+    public ServiceResponse<Boolean> addManager(ManagerCreateDto managerCreateDto) {
+        User manager = userMapper.managerCreateDtoToManager(managerCreateDto);
+        if(findByUsernameOrEmail(manager.getUsername(), manager.getEmail()) != null) {
+            return new ServiceResponse<>(null, "manager already exists", 400);
+        }
+        userRepository.save(manager);
+        PendingUser pendingUser = new PendingUser();
+        pendingUser.setEmail(manager.getEmail());
+        pendingUser.setVerificationCode(UtilClass.generateRandomString());
+        pendingUserRepository.save(pendingUser);
+        return new ServiceResponse<>(null, "manager added", 200);
+    }
+
+    @Override
+    public ServiceResponse<TokenResponseDto> login(TokenRequestDto tokenRequestDto) {
         //Try to find active user for specified credentials
         User user = userRepository
                 .findUserByUsernameAndPassword(tokenRequestDto.getUsername(), tokenRequestDto.getPassword())
-                .orElseThrow(() -> new NotFoundException(String
-                        .format("User with username: %s and password: %s not found.", tokenRequestDto.getUsername(),
-                                tokenRequestDto.getPassword())));
+                .orElse(null);
+        if(user == null) {
+            return new ServiceResponse<>(null, "Invalid credentials", 404);
+        }
+        if(user.isForbidden() || !user.isEnabled()) {
+            return new ServiceResponse<>(null, "User is forbidden or not enabled.", 401);
+        }
         //Create token payload
         Claims claims = Jwts.claims();
         claims.put("id", user.getId());
         claims.put("role", user.getRole().getName());
         //Generate token
-        return new TokenResponseDto(tokenService.generate(claims));
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(tokenService.generate(claims));
+        return new ServiceResponse<>(tokenResponseDto, "Login successful", 200);
     }
 
     private PendingUserDto findByEmailAndVerificationCode(String email, String verificationCode) {
@@ -89,12 +108,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean verifyUser(PendingUserDto pendingUserDto) {
+    public ServiceResponse<Boolean> verifyUser(PendingUserDto pendingUserDto) {
         if(findByEmailAndVerificationCode(pendingUserDto.getEmail(), pendingUserDto.getVerificationCode()) != null) {
             pendingUserRepository.deletePendingUserByEmail(pendingUserDto.getEmail());
             userRepository.enableUser(pendingUserDto.getEmail());
-            return true;
+            return new ServiceResponse<>(true, "User verified", 200);
         }
-        return false;
+        return new ServiceResponse<>(false, "User not verified", 400);
     }
 }

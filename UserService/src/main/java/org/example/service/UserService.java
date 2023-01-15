@@ -1,18 +1,21 @@
 package org.example.service;
 
 import org.example.dto.*;
+import org.example.util.ServiceResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    Page<UserDto> findAll(Pageable pageable);
+    ServiceResponse<Page<UserDto>> findAll(Pageable pageable);
 
-    boolean add(UserCreateDto userCreateDto);
+    ServiceResponse<Boolean> addUser(UserCreateDto userCreateDto);
 
-    TokenResponseDto login(TokenRequestDto tokenRequestDto);
+    ServiceResponse<Boolean> addManager(ManagerCreateDto managerCreateDto);
 
-    boolean verifyUser(PendingUserDto pendingUserDto);
+    ServiceResponse<TokenResponseDto> login(TokenRequestDto tokenRequestDto);
+
+    ServiceResponse<Boolean> verifyUser(PendingUserDto pendingUserDto);
 }
 

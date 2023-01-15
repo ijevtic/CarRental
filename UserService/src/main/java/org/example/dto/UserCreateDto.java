@@ -7,74 +7,24 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-public class UserCreateDto {
+public class UserCreateDto extends AUserCreateDto{
 
-    @Email
-    private String email;
-    @NotBlank
-    private String firstName;
-    @NotBlank
-    private String lastName;
-    @NotBlank
-    private String username;
-    @Length(min = 8, max = 20)
-    private String password;
-    private Date birthDate;
-    private String phoneNumber;
+    private String passportNumber;
+    private String totalRentDays;
 
-    public String getEmail() {
-        return email;
+    public String getPassportNumber() {
+        return passportNumber;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPassportNumber(String passportNumber) {
+        this.passportNumber = passportNumber;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getTotalRentDays() {
+        return totalRentDays;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setTotalRentDays(String totalRentDays) {
+        this.totalRentDays = totalRentDays;
     }
 }

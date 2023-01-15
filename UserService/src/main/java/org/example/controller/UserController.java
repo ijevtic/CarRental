@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import org.example.dto.*;
 import org.example.security.CheckSecurity;
 import org.example.service.UserService;
+import org.example.util.ServiceResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -34,42 +35,37 @@ public class UserController {
                             "Multiple sort criteria are supported.")})
     @GetMapping
     @CheckSecurity(roles = {"ADMIN", "USER"})
-    public ResponseEntity<Page<UserDto>> getAllUsers(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<ServiceResponse<Page<UserDto>>> getAllUsers(@RequestHeader("Authorization") String authorization,
                                                      Pageable pageable) {
-        return new ResponseEntity<>(userService.findAll(pageable), HttpStatus.OK);
-
-//        return new ResponseEntity<>(userService.findAll(pageable), HttpStatus.OK);
+        ServiceResponse<Page<UserDto>> response = userService.findAll(pageable);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Register user")
-    @PostMapping
-    public ResponseEntity<String> saveUser(@RequestBody @Valid UserCreateDto userCreateDto) {
-        if(userService.add(userCreateDto)) {
-            return new ResponseEntity<>("User succesfully created!",HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>("User with the same email/username already exists", HttpStatus.FORBIDDEN);
-        }
+    @PostMapping("/registerUser")
+    public ResponseEntity<ServiceResponse<Boolean>> saveUser(@RequestBody @Valid UserCreateDto userCreateDto) {
+        ServiceResponse<Boolean> response = userService.addUser(userCreateDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "Register manager")
+    @PostMapping("/registerManager")
+    public ResponseEntity<ServiceResponse<Boolean>> saveManager(@RequestBody @Valid ManagerCreateDto managerCreateDto) {
+        ServiceResponse<Boolean> response = userService.addManager(managerCreateDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Login")
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDto> loginUser(@RequestBody @Valid TokenRequestDto tokenRequestDto) {
-        return new ResponseEntity<>(userService.login(tokenRequestDto), HttpStatus.OK);
+    public ResponseEntity<ServiceResponse<TokenResponseDto>> loginUser(@RequestBody @Valid TokenRequestDto tokenRequestDto) {
+        ServiceResponse<TokenResponseDto> response = userService.login(tokenRequestDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Verify")
     @GetMapping("/verify")
-    public ResponseEntity<String> verifyUser(@RequestBody @Valid PendingUserDto pendingUserDto) {
-        if(userService.verifyUser(pendingUserDto)) {
-            return new ResponseEntity<>("User succesfully verified!", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ServiceResponse<Boolean>> verifyUser(@RequestBody @Valid PendingUserDto pendingUserDto) {
+        ServiceResponse<Boolean> response = userService.verifyUser(pendingUserDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-//    @ApiOperation(value = "Login")
-//    @GetMapping("/login")
-//    public ResponseEntity<String> proba(@RequestBody @Valid String token) {
-//        return new ResponseEntity<>(token, HttpStatus.OK);
-//    }
-//
 }

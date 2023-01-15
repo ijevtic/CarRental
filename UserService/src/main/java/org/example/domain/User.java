@@ -17,7 +17,52 @@ public class User {
     private String email;
     private String phoneNumber;
     private Date birthDate;
-    private boolean enabled;
+    private String passportNumber;
+    private int totalRentDays;
+    private String companyName;
+    private String startWorkDate;
+    private boolean forbidden; // true if user is forbidden to login
+    private boolean enabled; // true if user has registered email address
+
+    public String getPassportNumber() {
+        return passportNumber;
+    }
+
+    public void setPassportNumber(String passportNumber) {
+        this.passportNumber = passportNumber;
+    }
+
+    public int getTotalRentDays() {
+        return totalRentDays;
+    }
+
+    public void setTotalRentDays(int totalRentDays) {
+        this.totalRentDays = totalRentDays;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getStartWorkDate() {
+        return startWorkDate;
+    }
+
+    public void setStartWorkDate(String startWorkDate) {
+        this.startWorkDate = startWorkDate;
+    }
+
+    public boolean isForbidden() {
+        return forbidden;
+    }
+
+    public void setForbidden(boolean forbidden) {
+        this.forbidden = forbidden;
+    }
 
     public Long getId() {
         return id;
