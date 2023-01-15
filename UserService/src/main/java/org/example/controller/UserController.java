@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.example.dto.*;
+import org.example.security.CheckSecurity;
 import org.example.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,7 @@ public class UserController {
                             "Default sort order is ascending. " +
                             "Multiple sort criteria are supported.")})
     @GetMapping
-//    @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_USER"})
+    @CheckSecurity(roles = {"ADMIN", "USER"})
     public ResponseEntity<Page<UserDto>> getAllUsers(@RequestHeader("Authorization") String authorization,
                                                      Pageable pageable) {
         return new ResponseEntity<>(userService.findAll(pageable), HttpStatus.OK);
