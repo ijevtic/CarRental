@@ -41,11 +41,21 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    @PostMapping
+    @ApiOperation(value = "Ban user")
+    @PostMapping("/ban/{username}")
     @CheckSecurity(roles = {"ADMIN"})
     public ResponseEntity<ServiceResponse<Boolean>> forbidUser(@RequestHeader("Authorization") String authorization
-            , @RequestBody @Valid String username) {
+            , @PathVariable("username") String username) {
         ServiceResponse<Boolean> response = userService.banUser(username);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "Unban user")
+    @PostMapping("/unban/{username}")
+    @CheckSecurity(roles = {"ADMIN"})
+    public ResponseEntity<ServiceResponse<Boolean>> unforbidUser(@RequestHeader("Authorization") String authorization
+            , @PathVariable("username") String username) {
+        ServiceResponse<Boolean> response = userService.unbanUser(username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 

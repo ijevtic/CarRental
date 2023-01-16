@@ -19,13 +19,13 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private ERole name;
+    private String name;
     private String description;
 
     public Role() {
     }
 
-    public Role(ERole name, String description) {
+    public Role(String name, String description) {
         this.name = name;
         this.description = description;
     }
@@ -38,11 +38,11 @@ public class Role {
         this.id = id;
     }
 
-    public ERole getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(ERole name) {
+    public void setName(String name) {
         this.name = name;
     }
 

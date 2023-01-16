@@ -19,7 +19,7 @@ public class State {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private EState name;
+    private String name;
 
     public Long getId() {
         return id;
@@ -29,11 +29,15 @@ public class State {
         this.id = id;
     }
 
-    public EState getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(EState name) {
+    public EState getNameEnum() {
+        return EState.valueOf(name);
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
 }

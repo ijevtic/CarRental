@@ -27,6 +27,9 @@ public class UserMapper {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setUsername(user.getUsername());
+        //TODO
+        userDto.setRole(user.getRole());
+        userDto.setState(user.getState());
         return userDto;
     }
     public User userCreateDtoToUser(UserCreateDto userCreateDto) {
@@ -51,7 +54,7 @@ public class UserMapper {
         user.setLastName(userCreateDto.getLastName());
         user.setUsername(userCreateDto.getUsername());
         user.setPassword(userCreateDto.getPassword());
-        user.setState(stateRepository.findStateByName("OK").get());
+        user.setState(stateRepository.findStateByName("NOT_VERIFIED").get());
         return user;
     }
 }

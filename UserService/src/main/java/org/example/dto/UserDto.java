@@ -21,6 +21,19 @@ public class UserDto {
         this.role = role;
     }
 
+    @Override
+    public String toString() {
+        return "UserDto{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", username='" + username + '\'' +
+                ", role=" + role +
+                ", state=" + state +
+                '}';
+    }
+
     public State getState() {
         return state;
     }

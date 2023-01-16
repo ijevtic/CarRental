@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserDto findByUsernameOrEmail(String usernameOrEmail) {
+        System.out.println("izbacuje" + usernameOrEmail);
         return userRepository.findUserByUsernameOrEmail(usernameOrEmail)
                 .map(userMapper::userToUserDto)
                 .orElse(null);
@@ -67,11 +68,11 @@ public class UserServiceImpl implements UserService {
         if (userDto == null) {
             return new ServiceResponse<>(false, "user not found", 404);
         }
-        if (userDto.getState().getName() == EState.BAN || userDto.getState().getName() == EState.BAN_AND_NOT_VERIFIED) {
+        if (userDto.getState().getNameEnum() == EState.BAN || userDto.getState().getNameEnum() == EState.BAN_AND_NOT_VERIFIED) {
             return new ServiceResponse<>(false, "User is already banned", 400);
         }
         State newState = findStateById(EState.BAN);
-        if (userDto.getState().getName() == EState.NOT_VERIFIED) {
+        if (userDto.getState().getNameEnum() == EState.NOT_VERIFIED) {
             newState = findStateById(EState.BAN_AND_NOT_VERIFIED);
         }
         userRepository.updateState(userDto.getEmail(), newState);
@@ -80,14 +81,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ServiceResponse<Boolean> unbanUser(String username) {
-        return null;
+        UserDto userDto = findByUsernameOrEmail(username);
+
+        if (userDto == null) {
+            return new ServiceResponse<>(false, "user not found", 404);
+        }
+        if (userDto.getState().getNameEnum() != EState.BAN && userDto.getState().getNameEnum() != EState.BAN_AND_NOT_VERIFIED) {
+            return new ServiceResponse<>(false, "User is already not banned", 400);
+        }
+        State newState = findStateById(EState.OK);
+        if (userDto.getState().getNameEnum() == EState.BAN_AND_NOT_VERIFIED) {
+            newState = findStateById(EState.NOT_VERIFIED);
+        }
+        userRepository.updateState(userDto.getEmail(), newState);
+        return new ServiceResponse<>(true, "user unbanned", 200);
     }
 
 
     @Override
     public ServiceResponse<Boolean> addUser(UserCreateDto userCreateDto) {
         User user = userMapper.userCreateDtoToUser(userCreateDto);
-        if(findByUsernameOrEmail(user.getUsername()) != null) {
+        if(findByUsernameOrEmail(user.getUsername()) != null || findByUsernameOrEmail(user.getEmail()) != null) {
             return new ServiceResponse<>(null, "user already exists", 400);
         }
         userRepository.save(user);
@@ -121,7 +135,7 @@ public class UserServiceImpl implements UserService {
         if(user == null) {
             return new ServiceResponse<>(null, "Invalid credentials", 404);
         }
-        if(user.getState().getName() != EState.OK) {
+        if(user.getState().getNameEnum() != EState.OK) {
             return new ServiceResponse<>(null, "User is forbidden or not enabled.", 401);
         }
         //Create token payload
@@ -143,12 +157,14 @@ public class UserServiceImpl implements UserService {
     public ServiceResponse<Boolean> verifyUser(PendingUserDto pendingUserDto) {
         if(findByEmailAndVerificationCode(pendingUserDto.getEmail(), pendingUserDto.getVerificationCode()) != null) {
             UserDto userDto = findByUsernameOrEmail(pendingUserDto.getEmail());
+            System.out.println("aaa");
+            System.out.println(userDto);
 
-            if(userDto.getState().getName() == EState.BAN_AND_NOT_VERIFIED ||
-                userDto.getState().getName() == EState.BAN) {
+            if(userDto.getState().getNameEnum() == EState.BAN_AND_NOT_VERIFIED ||
+                userDto.getState().getNameEnum() == EState.BAN) {
                 return new ServiceResponse<>(false, "User is banned and cant be verified", 400);
             }
-            if(userDto.getState().getName() == EState.OK) {
+            if(userDto.getState().getNameEnum() == EState.OK) {
                 return new ServiceResponse<>(false, "User is already verified", 400);
             }
             pendingUserRepository.deletePendingUserByEmail(pendingUserDto.getEmail());
