@@ -1,5 +1,7 @@
 package org.example.repository;
 
+import org.example.domain.Role;
+import org.example.domain.State;
 import org.example.domain.User;
 //import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,10 +18,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByUsernameAndPassword(String username, String password);
 
     @Modifying
-    @Query("update User u set u.enabled = true where u.email like :email")
-    void enableUser(String email);
+    @Query("update User u set u.state = :state where u.email like :usernameOrEmail or u.username like :usernameOrEmail")
+    void updateState(String usernameOrEmail, State state);
 
-    @Query("select p from User p where p.username like :username or p.email like :email")
-    Optional<User> findUserByUsernameOrEmail(String username, String email);
+    @Query("select p from User p where p.username like :usernameOrEmail or p.email like :usernameOrEmail")
+    Optional<User> findUserByUsernameOrEmail(String usernameOrEmail);
+
+    Optional<User> findUserByUsername(String username);
 }
 

@@ -14,6 +14,8 @@ public class User {
     private String password;
     @ManyToOne(optional = false)
     private Role role;
+    @ManyToOne(optional = false)
+    private State state;
     private String email;
     private String phoneNumber;
     private Date birthDate;
@@ -21,8 +23,6 @@ public class User {
     private int totalRentDays;
     private String companyName;
     private String startWorkDate;
-    private boolean forbidden; // true if user is forbidden to login
-    private boolean enabled; // true if user has registered email address
 
     public String getPassportNumber() {
         return passportNumber;
@@ -54,14 +54,6 @@ public class User {
 
     public void setStartWorkDate(String startWorkDate) {
         this.startWorkDate = startWorkDate;
-    }
-
-    public boolean isForbidden() {
-        return forbidden;
-    }
-
-    public void setForbidden(boolean forbidden) {
-        this.forbidden = forbidden;
     }
 
     public Long getId() {
@@ -136,11 +128,11 @@ public class User {
         this.birthDate = birthDate;
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public State getState() {
+        return state;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setState(State state) {
+        this.state = state;
     }
 }

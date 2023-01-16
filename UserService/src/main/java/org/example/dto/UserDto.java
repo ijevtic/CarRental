@@ -1,5 +1,8 @@
 package org.example.dto;
 
+import org.example.domain.Role;
+import org.example.domain.State;
+
 public class UserDto {
 
     private Long id;
@@ -7,6 +10,24 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String username;
+    private Role role;
+    private State state;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
 
     public Long getId() {
         return id;

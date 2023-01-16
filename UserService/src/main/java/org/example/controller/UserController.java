@@ -41,6 +41,14 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @PostMapping
+    @CheckSecurity(roles = {"ADMIN"})
+    public ResponseEntity<ServiceResponse<Boolean>> forbidUser(@RequestHeader("Authorization") String authorization
+            , @RequestBody @Valid String username) {
+        ServiceResponse<Boolean> response = userService.banUser(username);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
     @ApiOperation(value = "Register user")
     @PostMapping("/registerUser")
     public ResponseEntity<ServiceResponse<Boolean>> saveUser(@RequestBody @Valid UserCreateDto userCreateDto) {

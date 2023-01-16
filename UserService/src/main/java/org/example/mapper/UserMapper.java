@@ -6,15 +6,18 @@ import org.example.dto.ManagerCreateDto;
 import org.example.dto.UserCreateDto;
 import org.example.dto.UserDto;
 import org.example.repository.RoleRepository;
+import org.example.repository.StateRepository;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
 
     private RoleRepository roleRepository;
+    private StateRepository stateRepository;
 
-    public UserMapper(RoleRepository roleRepository) {
+    public UserMapper(RoleRepository roleRepository, StateRepository stateRepository) {
         this.roleRepository = roleRepository;
+        this.stateRepository = stateRepository;
     }
 
     public UserDto userToUserDto(User user) {
@@ -48,8 +51,7 @@ public class UserMapper {
         user.setLastName(userCreateDto.getLastName());
         user.setUsername(userCreateDto.getUsername());
         user.setPassword(userCreateDto.getPassword());
-        user.setEnabled(false);
-        user.setForbidden(false);
+        user.setState(stateRepository.findStateByName("OK").get());
         return user;
     }
 }

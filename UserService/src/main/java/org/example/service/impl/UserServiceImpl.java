@@ -2,14 +2,13 @@ package org.example.service.impl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.example.domain.PendingUser;
-import org.example.domain.Role;
-import org.example.domain.User;
+import org.example.domain.*;
 import org.example.dto.*;
-import org.example.exception.NotFoundException;
 import org.example.mapper.PendingUserMapper;
 import org.example.mapper.UserMapper;
 import org.example.repository.PendingUserRepository;
+import org.example.repository.RoleRepository;
+import org.example.repository.StateRepository;
 import org.example.repository.UserRepository;
 import org.example.security.service.TokenService;
 import org.example.service.UserService;
@@ -17,7 +16,6 @@ import org.example.util.ServiceResponse;
 import org.example.util.UtilClass;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,14 +28,19 @@ public class UserServiceImpl implements UserService {
     private PendingUserRepository pendingUserRepository;
     private UserMapper userMapper;
     private PendingUserMapper pendingUserMapper;
+    private RoleRepository roleRepository;
+    private StateRepository stateRepository;
 
     public UserServiceImpl(UserRepository userRepository, TokenService tokenService, PendingUserRepository pendingUserRepository,
-                           UserMapper userMapper, PendingUserMapper pendingUserMapper) {
+                           UserMapper userMapper, PendingUserMapper pendingUserMapper,
+                           RoleRepository roleRepository, StateRepository stateRepository) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.pendingUserRepository = pendingUserRepository;
         this.userMapper = userMapper;
         this.pendingUserMapper = pendingUserMapper;
+        this.roleRepository = roleRepository;
+        this.stateRepository = stateRepository;
     }
 
     @Override
@@ -46,16 +49,45 @@ public class UserServiceImpl implements UserService {
                 "all users", 200);
     }
 
-    private UserDto findByUsernameOrEmail(String username, String email) {
-        return userRepository.findUserByUsernameOrEmail(username, email)
+    private State findStateById(EState state) {
+        return stateRepository.getReferenceById(State.stateMap.get(state))
+                .orElse(null);
+    }
+
+    private UserDto findByUsernameOrEmail(String usernameOrEmail) {
+        return userRepository.findUserByUsernameOrEmail(usernameOrEmail)
                 .map(userMapper::userToUserDto)
                 .orElse(null);
     }
 
     @Override
+    public ServiceResponse<Boolean> banUser(String username) {
+        UserDto userDto = findByUsernameOrEmail(username);
+
+        if (userDto == null) {
+            return new ServiceResponse<>(false, "user not found", 404);
+        }
+        if (userDto.getState().getName() == EState.BAN || userDto.getState().getName() == EState.BAN_AND_NOT_VERIFIED) {
+            return new ServiceResponse<>(false, "User is already banned", 400);
+        }
+        State newState = findStateById(EState.BAN);
+        if (userDto.getState().getName() == EState.NOT_VERIFIED) {
+            newState = findStateById(EState.BAN_AND_NOT_VERIFIED);
+        }
+        userRepository.updateState(userDto.getEmail(), newState);
+        return new ServiceResponse<>(true, "user banned", 200);
+    }
+
+    @Override
+    public ServiceResponse<Boolean> unbanUser(String username) {
+        return null;
+    }
+
+
+    @Override
     public ServiceResponse<Boolean> addUser(UserCreateDto userCreateDto) {
         User user = userMapper.userCreateDtoToUser(userCreateDto);
-        if(findByUsernameOrEmail(user.getUsername(), user.getEmail()) != null) {
+        if(findByUsernameOrEmail(user.getUsername()) != null) {
             return new ServiceResponse<>(null, "user already exists", 400);
         }
         userRepository.save(user);
@@ -69,7 +101,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ServiceResponse<Boolean> addManager(ManagerCreateDto managerCreateDto) {
         User manager = userMapper.managerCreateDtoToManager(managerCreateDto);
-        if(findByUsernameOrEmail(manager.getUsername(), manager.getEmail()) != null) {
+        if(findByUsernameOrEmail(manager.getUsername()) != null) {
             return new ServiceResponse<>(null, "manager already exists", 400);
         }
         userRepository.save(manager);
@@ -89,7 +121,7 @@ public class UserServiceImpl implements UserService {
         if(user == null) {
             return new ServiceResponse<>(null, "Invalid credentials", 404);
         }
-        if(user.isForbidden() || !user.isEnabled()) {
+        if(user.getState().getName() != EState.OK) {
             return new ServiceResponse<>(null, "User is forbidden or not enabled.", 401);
         }
         //Create token payload
@@ -110,10 +142,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public ServiceResponse<Boolean> verifyUser(PendingUserDto pendingUserDto) {
         if(findByEmailAndVerificationCode(pendingUserDto.getEmail(), pendingUserDto.getVerificationCode()) != null) {
+            UserDto userDto = findByUsernameOrEmail(pendingUserDto.getEmail());
+
+            if(userDto.getState().getName() == EState.BAN_AND_NOT_VERIFIED ||
+                userDto.getState().getName() == EState.BAN) {
+                return new ServiceResponse<>(false, "User is banned and cant be verified", 400);
+            }
+            if(userDto.getState().getName() == EState.OK) {
+                return new ServiceResponse<>(false, "User is already verified", 400);
+            }
             pendingUserRepository.deletePendingUserByEmail(pendingUserDto.getEmail());
-            userRepository.enableUser(pendingUserDto.getEmail());
+            userRepository.updateState(userDto.getEmail(), findStateById(EState.OK));
             return new ServiceResponse<>(true, "User verified", 200);
         }
-        return new ServiceResponse<>(false, "User not verified", 400);
+        return new ServiceResponse<>(false, "User not verified, wrong verification code", 400);
     }
 }

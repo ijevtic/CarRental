@@ -10,6 +10,10 @@ public interface UserService {
 
     ServiceResponse<Page<UserDto>> findAll(Pageable pageable);
 
+    ServiceResponse<Boolean> banUser(String username);
+
+    ServiceResponse<Boolean> unbanUser(String username);
+
     ServiceResponse<Boolean> addUser(UserCreateDto userCreateDto);
 
     ServiceResponse<Boolean> addManager(ManagerCreateDto managerCreateDto);
