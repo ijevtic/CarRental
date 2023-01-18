@@ -4,13 +4,16 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.example.dto.*;
+import org.example.listener.helper.MessageHelper;
 import org.example.security.CheckSecurity;
 import org.example.service.UserService;
 import org.example.util.ServiceResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,9 +23,16 @@ import javax.validation.Valid;
 public class UserController {
 
     private UserService userService;
+    private JmsTemplate jmsTemplate;
+    private MessageHelper messageHelper;
+    private String orderDestination;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JmsTemplate jmsTemplate, MessageHelper messageHelper,
+                          @Value("${destination.createOrder}") String orderDestination) {
         this.userService = userService;
+        this.jmsTemplate = jmsTemplate;
+        this.messageHelper = messageHelper;
+        this.orderDestination = orderDestination;
     }
 
     @ApiOperation(value = "Get all users")
@@ -85,5 +95,12 @@ public class UserController {
     public ResponseEntity<ServiceResponse<Boolean>> verifyUser(@RequestBody @Valid PendingUserDto pendingUserDto) {
         ServiceResponse<Boolean> response = userService.verifyUser(pendingUserDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "Lol")
+    @GetMapping("/lol")
+    public ResponseEntity<ServiceResponse<Boolean>> lol() {
+        jmsTemplate.convertAndSend(orderDestination, messageHelper.createTextMessage("lol"));
+        return new ResponseEntity<>(new ServiceResponse<>(true,"aa",200), HttpStatus.OK);
     }
 }
