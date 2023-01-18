@@ -1,11 +1,12 @@
 package org.example.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table(indexes = {@Index(columnList = "typeName", unique = true)})
 public class CarType {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String  typeName;
 

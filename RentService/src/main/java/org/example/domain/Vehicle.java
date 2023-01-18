@@ -3,15 +3,18 @@ package org.example.domain;
 import javax.persistence.*;
 
 @Entity
-//@Table(indexes = {@Index(columnList = "companyName", unique = true)})
 public class Vehicle {
-    @Id
-    private Long id;
 
+    //Da li da dodamo String city za vozila mozda?
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @ManyToOne(optional = false)
     private Company company;
     @ManyToOne(optional = false)
     private CarModel carModel;
+    @ManyToOne(optional = false)
+    private CarType carType;
 
     public Long getId() {
         return id;
@@ -36,4 +39,13 @@ public class Vehicle {
     public void setCarModel(CarModel carModel) {
         this.carModel = carModel;
     }
+
+    public CarType getCarType() {
+        return carType;
+    }
+
+    public void setCarType(CarType carType) {
+        this.carType = carType;
+    }
+
 }
