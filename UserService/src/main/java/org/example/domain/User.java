@@ -21,7 +21,7 @@ public class User {
     private Date birthDate;
     private String passportNumber;
     private int totalRentDays;
-    private String companyName;
+    private Long companyId;
     private String startWorkDate;
 
     public String getPassportNumber() {
@@ -40,12 +40,12 @@ public class User {
         this.totalRentDays = totalRentDays;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public Long getCompanyId() {
+        return companyId;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 
     public String getStartWorkDate() {

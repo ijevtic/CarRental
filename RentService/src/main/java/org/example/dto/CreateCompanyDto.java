@@ -1,6 +1,9 @@
 package org.example.dto;
 
+import javax.validation.constraints.NotBlank;
+
 public class CreateCompanyDto {
+    @NotBlank
     private String companyName;
     private String description;
 

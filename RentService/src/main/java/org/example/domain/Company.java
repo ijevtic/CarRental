@@ -1,6 +1,7 @@
 package org.example.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(indexes = {@Index(columnList = "companyName", unique = true)})
@@ -9,6 +10,7 @@ public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
     private String companyName;
     private String description;
 

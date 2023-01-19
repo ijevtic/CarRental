@@ -20,7 +20,7 @@ public class EmailListener {
         this.emailService = emailService;
     }
 
-    @JmsListener(destination = "${sendEmails}", concurrency = "5-10")
+    @JmsListener(destination = "${async.sendEmails}", concurrency = "5-10")
     public void sendNotification(Message message) throws JMSException {
         MailDto mailDto = messageHelper.getMessage(message, MailDto.class);
         emailService.sendSimpleMessage(mailDto.getClientEmail(), mailDto.getClientSubject(), mailDto.getClientMessage());

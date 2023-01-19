@@ -28,7 +28,7 @@ public class UserController {
     private String orderDestination;
 
     public UserController(UserService userService, JmsTemplate jmsTemplate, MessageHelper messageHelper,
-                          @Value("${destination.createOrder}") String orderDestination) {
+                          @Value("${async.notifications}") String orderDestination) {
         this.userService = userService;
         this.jmsTemplate = jmsTemplate;
         this.messageHelper = messageHelper;

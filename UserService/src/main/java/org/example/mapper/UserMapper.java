@@ -42,7 +42,7 @@ public class UserMapper {
     public User managerCreateDtoToManager(ManagerCreateDto managerCreateDto) {
         User manager = userToUserCreateDtoBase(managerCreateDto);
         manager.setRole(roleRepository.findRoleByName("MANAGER").get());
-        manager.setCompanyName(managerCreateDto.getCompanyName());
+//        manager.setCompanyName(managerCreateDto.getCompanyName());
         manager.setStartWorkDate(managerCreateDto.getStartWorkDate());
         return manager;
     }

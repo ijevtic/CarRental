@@ -5,6 +5,10 @@ public class ServiceResponse<T> {
     private int statusCode;
     private String message;
     private T data;
+
+    public ServiceResponse() {
+    }
+
     public ServiceResponse(T data, String message, int statusCode) {
         this.data = data;
         this.message = message;

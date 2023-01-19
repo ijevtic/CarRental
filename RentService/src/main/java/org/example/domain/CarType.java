@@ -1,10 +1,19 @@
 package org.example.domain;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(indexes = {@Index(columnList = "typeName", unique = true)})
 public class CarType {
+
+    public static final Map<ECarType, Long> typeMap = new HashMap<ECarType,Long>() {{
+        put(ECarType.SUV, 1L);
+        put(ECarType.SEDAN, 2L);
+        put(ECarType.HATCHBACK, 3L);
+    }};
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,37 +1,84 @@
 package org.example.controller;
 
 import org.example.dto.*;
-import org.example.service.CarService;
+import org.example.security.CheckSecurity;
+import org.example.service.RentService;
 import org.example.util.ServiceResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/rent")
 public class RentController {
-    CarService carService;
+    RentService rentService;
 
-    public RentController(CarService carService) {
-        this.carService = carService;
+    public RentController(RentService rentService) {
+        this.rentService = rentService;
     }
 
-    public ResponseEntity<ServiceResponse<Boolean>> addCompany(@RequestBody CreateCompanyDto createCompanyDto){
-        ServiceResponse<Boolean> response = carService.addCompany(createCompanyDto);
+    //radi
+    @PostMapping("/addCompany")
+    @CheckSecurity(roles = {"ADMIN"})
+    public ResponseEntity<ServiceResponse<Boolean>> addCompany(@RequestHeader("Authorization") String authorization,
+                                                               @RequestBody CreateCompanyDto createCompanyDto){
+        ServiceResponse<Boolean> response = rentService.addCompany(createCompanyDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    public ResponseEntity<ServiceResponse<Boolean>> editCompany(@RequestBody EditCompanyDto editCompanyDto){
-        ServiceResponse<Boolean> response = carService.editCompany(editCompanyDto);
+    //radi
+    @GetMapping("/getCompany/{name}")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER", "USER"})
+    public ResponseEntity<ServiceResponse<Long>> getCompany(@RequestHeader("Authorization") String authorization,
+                                                               @PathVariable("name") String name){
+        ServiceResponse<Long> response = rentService.getCompanyId(name);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    public ResponseEntity<ServiceResponse<Boolean>> addVehicle(@RequestBody AddVehicleDto addVehicleDto){
-        ServiceResponse<Boolean> response = carService.addVehicle(addVehicleDto);
+
+    //radi
+    @PostMapping("/editCompanyDesc")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
+    public ResponseEntity<ServiceResponse<Boolean>> editCompanyDesc(@RequestHeader("Authorization") String authorization,
+                                                                    @RequestBody EditCompanyDto editCompanyDto){
+
+        System.out.println(authorization);
+        ServiceResponse<Boolean> response = rentService.editCompanyDesc(authorization, editCompanyDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @PostMapping("/addModel")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
+    public ResponseEntity<ServiceResponse<Boolean>> addModel(@RequestHeader("Authorization") String authorization,
+                                                                    @RequestBody AddModelDto addModelDto){
+        ServiceResponse<Boolean> response = rentService.addModel(authorization, addModelDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @PostMapping("/changeModel")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
+    public ResponseEntity<ServiceResponse<Boolean>> changeModel(@RequestHeader("Authorization") String authorization,
+                                                             @RequestBody EditModelDto editModelDto){
+        ServiceResponse<Boolean> response = rentService.changeModel(authorization, editModelDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    //TODO dodavanje vise vozila odjednom
+    @PostMapping("/addVehicle")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
+    public ResponseEntity<ServiceResponse<Boolean>> addVehicle(@RequestHeader("Authorization") String authorization,
+                                                                @RequestBody AddVehicleDto addVehicleDto){
+        ServiceResponse<Boolean> response = rentService.addVehicle(authorization, addVehicleDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @PostMapping("/changeVehicle")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
+    public ResponseEntity<ServiceResponse<Boolean>> changeVehicle(@RequestHeader("Authorization") String authorization,
+                                                               @RequestBody ChangeVehicleDto changeVehicleDto){
+        ServiceResponse<Boolean> response = rentService.changeVehicle(authorization, changeVehicleDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 

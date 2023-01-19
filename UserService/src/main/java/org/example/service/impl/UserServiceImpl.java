@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.example.domain.*;
@@ -12,12 +13,19 @@ import org.example.repository.StateRepository;
 import org.example.repository.UserRepository;
 import org.example.security.service.TokenService;
 import org.example.service.UserService;
+import org.example.util.LongServiceResponse;
 import org.example.util.ServiceResponse;
 import org.example.util.UtilClass;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import java.lang.reflect.Type;
 
 @Service
 @Transactional
@@ -31,16 +39,19 @@ public class UserServiceImpl implements UserService {
     private RoleRepository roleRepository;
     private StateRepository stateRepository;
 
-    public UserServiceImpl(UserRepository userRepository, TokenService tokenService, PendingUserRepository pendingUserRepository,
-                           UserMapper userMapper, PendingUserMapper pendingUserMapper,
-                           RoleRepository roleRepository, StateRepository stateRepository) {
-        this.userRepository = userRepository;
+    private RestTemplate rentServiceRestTemplate;
+
+    public UserServiceImpl(TokenService tokenService, UserRepository userRepository, PendingUserRepository pendingUserRepository,
+                           UserMapper userMapper, PendingUserMapper pendingUserMapper, RoleRepository roleRepository,
+                           StateRepository stateRepository, RestTemplate rentServiceRestTemplate) {
         this.tokenService = tokenService;
+        this.userRepository = userRepository;
         this.pendingUserRepository = pendingUserRepository;
         this.userMapper = userMapper;
         this.pendingUserMapper = pendingUserMapper;
         this.roleRepository = roleRepository;
         this.stateRepository = stateRepository;
+        this.rentServiceRestTemplate = rentServiceRestTemplate;
     }
 
     @Override
@@ -55,7 +66,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserDto findByUsernameOrEmail(String usernameOrEmail) {
-        System.out.println("izbacuje" + usernameOrEmail);
         return userRepository.findUserByUsernameOrEmail(usernameOrEmail)
                 .map(userMapper::userToUserDto)
                 .orElse(null);
@@ -112,12 +122,31 @@ public class UserServiceImpl implements UserService {
         return new ServiceResponse<>(null, "user added", 200);
     }
 
+    class Wrapper extends ServiceResponse<Long>{
+        public Wrapper(Long data, String message, int statusCode) {
+            super(data, message, statusCode);
+        }
+    };
+
     @Override
     public ServiceResponse<Boolean> addManager(ManagerCreateDto managerCreateDto) {
         User manager = userMapper.managerCreateDtoToManager(managerCreateDto);
-        if(findByUsernameOrEmail(manager.getUsername()) != null) {
+        if(findByUsernameOrEmail(manager.getUsername()) != null || findByUsernameOrEmail(manager.getEmail()) != null) {
             return new ServiceResponse<>(null, "manager already exists", 400);
         }
+        ResponseEntity<ServiceResponse<Long>> response = null;
+        Long companyId = null;
+        try {
+            System.out.println("aa");
+            response = rentServiceRestTemplate.exchange("/getCompany/" + managerCreateDto.getCompanyName(),
+                    HttpMethod.GET, null, new ParameterizedTypeReference<ServiceResponse<Long>>() {});
+            companyId = response.getBody().getData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ServiceResponse<>(null, "company with a given name does not exist!", 404);
+        }
+
+        manager.setCompanyId(companyId);
         userRepository.save(manager);
         PendingUser pendingUser = new PendingUser();
         pendingUser.setEmail(manager.getEmail());
@@ -142,6 +171,10 @@ public class UserServiceImpl implements UserService {
         Claims claims = Jwts.claims();
         claims.put("id", user.getId());
         claims.put("role", user.getRole().getName());
+        //TODO
+        if(ERole.valueOf(user.getRole().getName()) == ERole.MANAGER) {
+            claims.put("company_id", user.getCompanyId());
+        }
         claims.put("time", System.currentTimeMillis() / 1000);
         //Generate token
         TokenResponseDto tokenResponseDto = new TokenResponseDto(tokenService.generate(claims));
@@ -154,6 +187,7 @@ public class UserServiceImpl implements UserService {
                 .orElse(null);
     }
 
+    //TODO ako ima vise puta u bazi?
     @Override
     public ServiceResponse<Boolean> verifyUser(PendingUserDto pendingUserDto) {
         if(findByEmailAndVerificationCode(pendingUserDto.getEmail(), pendingUserDto.getVerificationCode()) != null) {

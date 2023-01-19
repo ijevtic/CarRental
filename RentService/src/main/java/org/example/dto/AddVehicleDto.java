@@ -3,31 +3,22 @@ package org.example.dto;
 import org.example.domain.Vehicle;
 
 public class AddVehicleDto {
-    private String company;
-    private String carModel;
-    private String carType;
+    private Long modelId;
+    private Long locationId;
 
-    public String getCompany() {
-        return company;
+    public Long getModelId() {
+        return modelId;
     }
 
-    public void setCompany(String company) {
-        this.company = company;
+    public void setModelId(Long modelId) {
+        this.modelId = modelId;
     }
 
-    public String getCarModel() {
-        return carModel;
+    public Long getLocationId() {
+        return locationId;
     }
 
-    public void setCarModel(String carModel) {
-        this.carModel = carModel;
-    }
-
-    public String getCarType() {
-        return carType;
-    }
-
-    public void setCarType(String carType) {
-        this.carType = carType;
+    public void setLocationId(Long locationId) {
+        this.locationId = locationId;
     }
 }
