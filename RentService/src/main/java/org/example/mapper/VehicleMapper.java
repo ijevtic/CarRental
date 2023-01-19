@@ -1,8 +1,11 @@
 package org.example.mapper;
 
+import org.example.domain.CarModel;
+import org.example.domain.Location;
 import org.example.domain.Vehicle;
 import org.example.dto.AddVehicleDto;
-import org.example.dto.VehicleDto;
+import org.example.dto.Vehicle.FilterInterval;
+import org.example.dto.Vehicle.VehicleDto;
 import org.example.repository.LocationRepository;
 import org.example.repository.ModelRepository;
 import org.springframework.stereotype.Component;
@@ -31,6 +34,21 @@ public class VehicleMapper {
         vehicleDto.setModelId(vehicle.getCarModel().getId());
         vehicleDto.setLocationId(vehicle.getLocation().getId());
         return vehicleDto;
+    }
+
+    public FilterInterval vehicleDtoToFilterInterval(VehicleDto vehicleDto) {
+        FilterInterval filterInterval = new FilterInterval();
+        filterInterval.setLocationId(vehicleDto.getLocationId());
+        filterInterval.setModelId(vehicleDto.getModelId());
+        Location location = locationRepository.getLocationById(vehicleDto.getLocationId()).orElse(null);
+        if(location != null) {
+            filterInterval.setLocationName(location.getCity());
+        }
+        CarModel carModel = modelRepository.findCarModelById(vehicleDto.getModelId()).orElse(null);
+        if(carModel != null) {
+            filterInterval.setModelName(carModel.getModelName());
+        }
+        return filterInterval;
     }
 
 

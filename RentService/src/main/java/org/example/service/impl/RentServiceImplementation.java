@@ -4,6 +4,7 @@ import org.example.domain.*;
 import org.example.dto.*;
 import org.example.dto.Reservation.AddReservationDto;
 import org.example.dto.Reservation.RemoveReservationDto;
+import org.example.dto.Vehicle.*;
 import org.example.mapper.CompanyMapper;
 import org.example.mapper.ModelMapper;
 import org.example.mapper.ReservationMapper;
@@ -200,7 +201,8 @@ public class RentServiceImplementation implements RentService {
             return new ServiceResponse<>(false, "user with a given id does not exist!", 404);
         }
         List<Vehicle> vehicles = vehicleRepository.findAll().stream().
-                filter(v -> input.getLocationId() == null || v.getLocation().getId().equals(input.getLocationId()))
+                filter(v -> (input.getCarModelId() == null || v.getCarModel().getId().equals(input.getCarModelId()))
+                        && (input.getLocationId() == null || v.getLocation().getId().equals(input.getLocationId())))
                 .collect(Collectors.toList());
 
         if(vehicles.isEmpty()) {
@@ -249,6 +251,33 @@ public class RentServiceImplementation implements RentService {
         }
         reservationRepository.delete(reservation);
         return new ServiceResponse<>(true, "Reservation deleted", 200);
+    }
+
+    @Override
+    public ServiceResponse<List<FilterInterval>> filterVehicles(VehicleFilter vehicleFilter) {
+        List<VehicleDto> vehicles = vehicleRepository.findAll().stream().
+                filter(v -> (vehicleFilter.getCarTypeId() == null || v.getCarModel().getCarType().getId().equals(vehicleFilter.getCarTypeId()))
+                        && (vehicleFilter.getLocationId() == null || v.getLocation().getId().equals(vehicleFilter.getLocationId()))
+                        && (vehicleFilter.getCompanyId() == null || v.getCarModel().getCompany().getId().equals(vehicleFilter.getCompanyId())))
+                .filter(v -> {
+                    List<Reservation> reservations = reservationRepository.findAllByVehicle(v);
+                    if(reservations.isEmpty()) { return true; }
+                    for(Reservation r : reservations) {
+                        if(!(r.getStartTime() < vehicleFilter.getStartTime() && r.getEndTime() < vehicleFilter.getStartTime())
+                            && !(r.getStartTime() > vehicleFilter.getEndTime() && r.getEndTime() > vehicleFilter.getEndTime())){
+                            return false;
+                        }
+                    }
+                    return true;
+                }).map(vehicleMapper::vehicleToVehicleDto).collect(Collectors.toList());
+        List<FilterInterval> lista = new ArrayList<>();
+        for(VehicleDto vehicleDto : vehicles) {
+            FilterInterval filterInterval = vehicleMapper.vehicleDtoToFilterInterval(vehicleDto);
+            if(!lista.contains(filterInterval)) {
+                lista.add(filterInterval);
+            }
+        }
+        return new ServiceResponse<>(lista, "Vehicles found", 200);
     }
 
 

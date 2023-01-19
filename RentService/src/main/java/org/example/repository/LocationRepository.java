@@ -12,4 +12,5 @@ import java.util.Optional;
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
     Optional<Location> getReferenceById(Long id);
+    Optional<Location> getLocationById(Long id);
 }

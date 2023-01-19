@@ -1,17 +1,23 @@
-package org.example.dto;
+package org.example.dto.Vehicle;
 
-import javax.validation.constraints.NotBlank;
-
-public class ChangeVehicleDto {
+public class VehicleDto {
     private Long id;
-    @NotBlank
     private Long locationId;
+    private Long modelId;
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getModelId() {
+        return modelId;
+    }
+
+    public void setModelId(Long modelId) {
+        this.modelId = modelId;
     }
 
     public Long getLocationId() {

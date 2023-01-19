@@ -1,4 +1,4 @@
-package org.example.dto;
+package org.example.dto.Vehicle;
 
 public class GetVehicleDto {
     //Dto koji vraca vozilo kao rezultat neke pretrage

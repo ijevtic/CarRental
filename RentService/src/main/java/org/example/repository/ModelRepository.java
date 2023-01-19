@@ -20,6 +20,7 @@ public interface ModelRepository extends JpaRepository<CarModel, Long> {
 
     Optional<CarModel> findCarModelById(Long id);
 
+
     @Modifying
     @Query("update CarModel m set m.modelName = :modelName, m.price = :price, m.carType = :carType where m.id = :id")
     void updateCarModelById(Long id, String modelName, Integer price, CarType carType);

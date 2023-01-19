@@ -1,9 +1,12 @@
 package org.example.controller;
 
-import org.example.domain.Vehicle;
 import org.example.dto.*;
 import org.example.dto.Reservation.AddReservationDto;
 import org.example.dto.Reservation.RemoveReservationDto;
+import org.example.dto.Vehicle.ChangeVehicleDto;
+import org.example.dto.Vehicle.FilterInterval;
+import org.example.dto.Vehicle.VehicleDto;
+import org.example.dto.Vehicle.VehicleFilter;
 import org.example.security.CheckSecurity;
 import org.example.service.RentService;
 import org.example.util.ServiceResponse;
@@ -11,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -98,6 +102,14 @@ public class RentController {
     public ResponseEntity<ServiceResponse<Boolean>> removeReservation(@RequestHeader("Authorization") String authorization,
                                                                          @RequestBody RemoveReservationDto removeReservationDto){
         ServiceResponse<Boolean> response = rentService.removeReservation(authorization, removeReservationDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @GetMapping("/filterVehicles")
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
+    public ResponseEntity<ServiceResponse<List<FilterInterval>>> filterVehicles(@RequestHeader("Authorization") String authorization,
+                                                                                @RequestBody @Valid VehicleFilter vehicleFilter){
+        ServiceResponse<List<FilterInterval>> response = rentService.filterVehicles(vehicleFilter);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
