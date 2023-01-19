@@ -137,7 +137,6 @@ public class UserServiceImpl implements UserService {
         ResponseEntity<ServiceResponse<Long>> response = null;
         Long companyId = null;
         try {
-            System.out.println("aa");
             response = rentServiceRestTemplate.exchange("/getCompany/" + managerCreateDto.getCompanyName(),
                     HttpMethod.GET, null, new ParameterizedTypeReference<ServiceResponse<Long>>() {});
             companyId = response.getBody().getData();

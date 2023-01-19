@@ -82,15 +82,15 @@ public class RentController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    public ResponseEntity<ServiceResponse<Boolean>> removeVehicle(@RequestBody RemoveVehicleDto removeVehicleDto){
-        ServiceResponse<Boolean> response = carService.removeVehicle(removeVehicleDto);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-    }
-
-    public ResponseEntity<ServiceResponse<List<GetVehicleDto>>> getAllAvailableVehicles(@RequestBody FindVehiclesDto findVehiclesDto){
-        ServiceResponse<List<GetVehicleDto>> response = carService.getAvailableVehiclesDto(findVehiclesDto);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-    }
+//    public ResponseEntity<ServiceResponse<Boolean>> removeVehicle(@RequestBody RemoveVehicleDto removeVehicleDto){
+//        ServiceResponse<Boolean> response = rentService.removeVehicle(removeVehicleDto);
+//        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+//    }
+//
+//    public ResponseEntity<ServiceResponse<List<GetVehicleDto>>> getAllAvailableVehicles(@RequestBody FindVehiclesDto findVehiclesDto){
+//        ServiceResponse<List<GetVehicleDto>> response = rentService.getAvailableVehiclesDto(findVehiclesDto);
+//        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+//    }
 
     //SEND RESERVATION CONFIRMATION
     // asinhrono (message broker) poslati poruku notif. servisu da je korisnik rezervisao vozilo

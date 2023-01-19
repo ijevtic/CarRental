@@ -67,7 +67,6 @@ public class RentServiceImplementation implements RentService {
         if(company == null) {
             return new ServiceResponse<>(null, "Company with that name does not exist", 400);
         }
-        System.out.println(company.getId());
         return new ServiceResponse<>(company.getId(), "Company found", 200);
     }
 
@@ -113,7 +112,6 @@ public class RentServiceImplementation implements RentService {
             return new ServiceResponse<>(false, "Model id doesn't exist!", 400);
         }
         CarModel newCarModel = modelMapper.editModelDtoToModel(oldCarModel, editModelDto, companyId);
-        System.out.println(newCarModel);
         modelRepository.updateCarModelById(editModelDto.getId(), newCarModel.getModelName(), newCarModel.getPrice(), newCarModel.getCarType());
         return new ServiceResponse<>(true, "Car model modified", 200);
     }
