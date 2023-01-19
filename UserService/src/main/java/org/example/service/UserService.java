@@ -10,6 +10,8 @@ public interface UserService {
 
     ServiceResponse<Page<UserDto>> findAll(Pageable pageable);
 
+    ServiceResponse<Boolean> findUser(Long userId);
+
     ServiceResponse<Boolean> banUser(String username);
 
     ServiceResponse<Boolean> unbanUser(String username);

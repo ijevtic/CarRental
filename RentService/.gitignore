@@ -26,6 +26,8 @@ activemq-data/
 log/
 target/
 
+application-private.properties
+
 # Package Files #
 *.jar
 *.war

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 @Repository
 public interface VehicleRepository  extends JpaRepository<Vehicle, Long> {
@@ -20,4 +21,8 @@ public interface VehicleRepository  extends JpaRepository<Vehicle, Long> {
     @Modifying
     @Query("update Vehicle v set v.location = :location where v.id = :id")
     void updateVehicle(Long id, Location location);
+
+//    @Query("SELECT v from Vehicle v left outer join Reservation r on v.id = r.vehicle.id WHERE r.startTime < :startTime and r.endTime < :startTime or r.startTime < :endTime and r.endTime > :endTime")
+    @Query("SELECT v from Vehicle v")
+    List<Vehicle> findAll();
 }

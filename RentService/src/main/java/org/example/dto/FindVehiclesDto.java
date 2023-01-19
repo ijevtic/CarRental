@@ -4,23 +4,23 @@ import java.util.Date;
 
 public class FindVehiclesDto {
     //pretraga dostupnih vozila za odredjeni period u odredejnom gradu
-    private Long startDate;
-    private Long endDate;
+    private Integer startDate;
+    private Integer endDate;
     private String city;
 
-    public Long getStartDate() {
+    public Integer getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Long startDate) {
+    public void setStartDate(Integer startDate) {
         this.startDate = startDate;
     }
 
-    public Long getEndDate() {
+    public Integer getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Long endDate) {
+    public void setEndDate(Integer endDate) {
         this.endDate = endDate;
     }
 

@@ -60,6 +60,15 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Find user")
+    @GetMapping("/findUser/{id}")
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
+    public ResponseEntity<ServiceResponse<Boolean>> findUser(@RequestHeader("Authorization") String authorization
+            , @PathVariable("id") Long userId) {
+        ServiceResponse<Boolean> response = userService.findUser(userId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
     @ApiOperation(value = "Unban user")
     @PostMapping("/unban/{username}")
     @CheckSecurity(roles = {"ADMIN"})

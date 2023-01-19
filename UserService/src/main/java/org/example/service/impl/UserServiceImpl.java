@@ -13,7 +13,6 @@ import org.example.repository.StateRepository;
 import org.example.repository.UserRepository;
 import org.example.security.service.TokenService;
 import org.example.service.UserService;
-import org.example.util.LongServiceResponse;
 import org.example.util.ServiceResponse;
 import org.example.util.UtilClass;
 import org.springframework.core.ParameterizedTypeReference;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.Type;
 
 @Service
 @Transactional
@@ -58,6 +56,15 @@ public class UserServiceImpl implements UserService {
     public ServiceResponse<Page<UserDto>> findAll(Pageable pageable) {
         return new ServiceResponse<>(userRepository.findAll(pageable).map(userMapper::userToUserDto),
                 "all users", 200);
+    }
+
+    @Override
+    public ServiceResponse<Boolean> findUser(Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return new ServiceResponse<>(false, "user not found", 404);
+        }
+        return new ServiceResponse<>(true, "user found", 200);
     }
 
     private State findStateById(EState state) {

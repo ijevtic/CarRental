@@ -5,7 +5,6 @@ import javax.persistence.*;
 @Entity
 public class Vehicle {
 
-    //Da li da dodamo String city za vozila mozda?
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

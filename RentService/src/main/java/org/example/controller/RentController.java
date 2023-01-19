@@ -1,6 +1,9 @@
 package org.example.controller;
 
+import org.example.domain.Vehicle;
 import org.example.dto.*;
+import org.example.dto.Reservation.AddReservationDto;
+import org.example.dto.Reservation.RemoveReservationDto;
 import org.example.security.CheckSecurity;
 import org.example.service.RentService;
 import org.example.util.ServiceResponse;
@@ -79,6 +82,22 @@ public class RentController {
     public ResponseEntity<ServiceResponse<Boolean>> changeVehicle(@RequestHeader("Authorization") String authorization,
                                                                @RequestBody ChangeVehicleDto changeVehicleDto){
         ServiceResponse<Boolean> response = rentService.changeVehicle(authorization, changeVehicleDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @PostMapping("/addReservation")
+    @CheckSecurity(roles = {"ADMIN", "USER"})
+    public ResponseEntity<ServiceResponse<Boolean>> addReservation(@RequestHeader("Authorization") String authorization,
+                                                                   @RequestBody AddReservationDto addReservationDto){
+        ServiceResponse<Boolean> response = rentService.addReservation(authorization, addReservationDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @PostMapping("/removeReservation")
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
+    public ResponseEntity<ServiceResponse<Boolean>> removeReservation(@RequestHeader("Authorization") String authorization,
+                                                                         @RequestBody RemoveReservationDto removeReservationDto){
+        ServiceResponse<Boolean> response = rentService.removeReservation(authorization, removeReservationDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
