@@ -8,6 +8,7 @@ import org.example.client.notificationservice.pop.PopPassword;
 import org.example.client.rentservice.EditCompanyDto;
 import org.example.domain.*;
 import org.example.dto.*;
+import org.example.dto.rent.RentUserDto;
 import org.example.listener.helper.MessageHelper;
 import org.example.mapper.PendingUserMapper;
 import org.example.mapper.UserMapper;
@@ -79,6 +80,24 @@ public class UserServiceImpl implements UserService {
             return new ServiceResponse<>(false, "user not found", 404);
         }
         return new ServiceResponse<>(true, "user found", 200);
+    }
+
+    @Override
+    public ServiceResponse<RentUserDto> findUserEmail(Long userId) {
+        RentUserDto user = userRepository.findById(userId).map(userMapper::userToRentUserDto).orElse(null);
+        if (user == null) {
+            return new ServiceResponse<>(null, "user not found", 404);
+        }
+        return new ServiceResponse<>(user, "user found", 200);
+    }
+
+    @Override
+    public ServiceResponse<RentUserDto> findManagerEmailFromCompany(Long companyId) {
+        RentUserDto user = userRepository.findUserByCompanyId(companyId).map(userMapper::userToRentUserDto).orElse(null);
+        if (user == null) {
+            return new ServiceResponse<>(null, "user not found", 404);
+        }
+        return new ServiceResponse<>(user, "user found", 200);
     }
 
     private State findStateById(EState state) {

@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import org.example.client.notificationservice.NotificationMQ;
 import org.example.client.notificationservice.pop.PopActivateAccount;
 import org.example.dto.*;
+import org.example.dto.rent.RentUserDto;
 import org.example.listener.helper.MessageHelper;
 import org.example.security.CheckSecurity;
 import org.example.service.UserService;
@@ -68,6 +69,24 @@ public class UserController {
     public ResponseEntity<ServiceResponse<Boolean>> findUser(@RequestHeader("Authorization") String authorization
             , @PathVariable("id") Long userId) {
         ServiceResponse<Boolean> response = userService.findUser(userId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "Find user email")
+    @GetMapping("/findUserEmail/{id}")
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
+    public ResponseEntity<ServiceResponse<RentUserDto>> findUserEmail(@RequestHeader("Authorization") String authorization
+            , @PathVariable("id") Long userId) {
+        ServiceResponse<RentUserDto> response = userService.findUserEmail(userId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "Find manager email for company")
+    @GetMapping("/findManagerEmail/{id}")
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
+    public ResponseEntity<ServiceResponse<RentUserDto>> findManagerEmail(@RequestHeader("Authorization") String authorization
+            , @PathVariable("id") Long companyId) {
+        ServiceResponse<RentUserDto> response = userService.findManagerEmailFromCompany(companyId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 

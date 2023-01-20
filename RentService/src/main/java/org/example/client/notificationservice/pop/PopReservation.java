@@ -11,6 +11,22 @@ public class PopReservation extends ANotification {
     private Integer endTime;
     //TODO add price
 
+
+    public PopReservation() {
+    }
+
+    public PopReservation(String clientEmail, String managerEmail, String clientUsername, String modelName, String city, Long companyId, String companyName, Integer startTime, Integer endTime) {
+        this.clientEmail = clientEmail;
+        this.managerEmail = managerEmail;
+        this.clientUsername = clientUsername;
+        this.modelName = modelName;
+        this.city = city;
+        this.companyId = companyId;
+        this.companyName = companyName;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     public Long getCompanyId() {
         return companyId;
     }
@@ -81,5 +97,20 @@ public class PopReservation extends ANotification {
 
     public void setEndTime(Integer endTime) {
         this.endTime = endTime;
+    }
+
+    @Override
+    public String toString() {
+        return "PopReservation{" +
+                "clientEmail='" + clientEmail + '\'' +
+                ", managerEmail='" + managerEmail + '\'' +
+                ", clientUsername='" + clientUsername + '\'' +
+                ", modelName='" + modelName + '\'' +
+                ", city='" + city + '\'' +
+                ", companyId=" + companyId +
+                ", companyName='" + companyName + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
     }
 }

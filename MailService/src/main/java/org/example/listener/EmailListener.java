@@ -28,4 +28,3 @@ public class EmailListener {
             emailService.sendSimpleMessage(mailDto.getManagerEmail(), mailDto.getManagerSubject(), mailDto.getManagerMessage());
     }
 }
-

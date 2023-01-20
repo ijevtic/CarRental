@@ -1,6 +1,7 @@
 package org.example.service;
 
 import org.example.dto.*;
+import org.example.dto.rent.RentUserDto;
 import org.example.util.ServiceResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,10 @@ public interface UserService {
     ServiceResponse<Page<UserDto>> findAll(Pageable pageable);
 
     ServiceResponse<Boolean> findUser(Long userId);
+
+    ServiceResponse<RentUserDto> findUserEmail(Long userId);
+
+    ServiceResponse<RentUserDto> findManagerEmailFromCompany(Long userId);
 
     ServiceResponse<Boolean> banUser(String username);
 

@@ -2,6 +2,7 @@ package org.example.mapper;
 
 import org.example.domain.User;
 import org.example.dto.*;
+import org.example.dto.rent.RentUserDto;
 import org.example.repository.RoleRepository;
 import org.example.repository.StateRepository;
 import org.springframework.data.util.Pair;
@@ -185,5 +186,15 @@ public class UserMapper {
         user.setPhoneNumber(userChangeDto.getPhoneNumber());
         user.setPassword(userChangeDto.getPassword());
         return user;
+    }
+
+    public RentUserDto userToRentUserDto(User user) {
+        RentUserDto rentUserDto = new RentUserDto();
+        rentUserDto.setId(user.getId());
+        rentUserDto.setEmail(user.getEmail());
+        rentUserDto.setFirstName(user.getFirstName());
+        rentUserDto.setLastName(user.getLastName());
+        rentUserDto.setUsername(user.getUsername());
+        return rentUserDto;
     }
 }

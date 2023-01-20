@@ -1,10 +1,14 @@
 package org.example.service.impl;
 
+import org.example.client.notificationservice.NotificationMQ;
+import org.example.client.notificationservice.pop.PopReservation;
+import org.example.client.userservice.RentUserDto;
 import org.example.domain.*;
 import org.example.dto.*;
 import org.example.dto.Reservation.AddReservationDto;
 import org.example.dto.Reservation.RemoveReservationDto;
 import org.example.dto.Vehicle.*;
+import org.example.helper.MessageHelper;
 import org.example.mapper.CompanyMapper;
 import org.example.mapper.ModelMapper;
 import org.example.mapper.ReservationMapper;
@@ -13,10 +17,12 @@ import org.example.repository.*;
 import org.example.security.service.TokenService;
 import org.example.service.RentService;
 import org.example.util.ServiceResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -40,15 +46,18 @@ public class RentServiceImplementation implements RentService {
     private VehicleMapper vehicleMapper;
     private ReservationMapper reservationMapper;
     private TokenService tokenService;
-
     private RestTemplate userServiceRestTemplate;
+    private JmsTemplate jmsTemplate;
+    private MessageHelper messageHelper;
+    private String notificationQueue;
 
     public RentServiceImplementation(CompanyRepository companyRepository, ModelRepository modelRepository,
                                      CarTypeRepository carTypeRepository, VehicleRepository vehicleRepository,
                                      LocationRepository locationRepository, CompanyMapper companyMapper,
                                      ModelMapper modelMapper, VehicleMapper vehicleMapper, TokenService tokenService,
                                      RestTemplate userServiceRestTemplate, ReservationRepository reservationRepository,
-                                     ReservationMapper reservationMapper) {
+                                     ReservationMapper reservationMapper, JmsTemplate jmsTemplate,
+                                     MessageHelper messageHelper, @Value("${async.notifications}") String notificationQueue) {
         this.companyRepository = companyRepository;
         this.modelRepository = modelRepository;
         this.carTypeRepository = carTypeRepository;
@@ -61,6 +70,9 @@ public class RentServiceImplementation implements RentService {
         this.tokenService = tokenService;
         this.userServiceRestTemplate = userServiceRestTemplate;
         this.reservationMapper = reservationMapper;
+        this.jmsTemplate = jmsTemplate;
+        this.messageHelper = messageHelper;
+        this.notificationQueue = notificationQueue;
     }
 
     public CarType getCarType(String carType) {
@@ -194,17 +206,17 @@ public class RentServiceImplementation implements RentService {
     public ServiceResponse<Boolean> addReservation(String jwt, AddReservationDto input) {
         Long userId = tokenService.getUserId(jwt);
 
-        ResponseEntity<ServiceResponse<Boolean>> response = null;
-        Boolean ok = false;
+        ResponseEntity<ServiceResponse<RentUserDto>> response = null;
+        RentUserDto client = null;
         try {
-            response = userServiceRestTemplate.exchange("/findUser/" + userId,
-                    HttpMethod.GET, null, new ParameterizedTypeReference<ServiceResponse<Boolean>>() {});
-            ok = response.getBody().getData();
+            response = userServiceRestTemplate.exchange("/findUserEmail/" + userId,
+                    HttpMethod.GET, null, new ParameterizedTypeReference<ServiceResponse<RentUserDto>>() {});
+            client = response.getBody().getData();
         } catch (Exception e) {
             e.printStackTrace();
             return new ServiceResponse<>(false, "user with a given id does not exist!", 404);
         }
-        if(!ok) {
+        if(client == null) {
             return new ServiceResponse<>(false, "user with a given id does not exist!", 404);
         }
         List<Vehicle> vehicles = vehicleRepository.findAll().stream().
@@ -223,7 +235,7 @@ public class RentServiceImplementation implements RentService {
                 reservation = reservationMapper.createReservation(userId, v, input.getStartTime(), input.getEndTime());
                 break;
             }
-            ok = true;
+            boolean ok = true;
             for(Reservation r : reservations) {
 
                 if(!(r.getStartTime() < input.getStartTime() && r.getEndTime() < input.getStartTime())
@@ -240,7 +252,18 @@ public class RentServiceImplementation implements RentService {
         if(reservation == null) {
             return new ServiceResponse<>(false, "No vehicles available in given time range", 404);
         }
+        RentUserDto manager = getManager(reservation.getVehicle().getCarModel().getCompany().getId());
         reservationRepository.save(reservation);
+        NotificationMQ<PopReservation> q = new NotificationMQ<>();
+        q.setType("RESERVATION");
+        q.setData(new PopReservation(client.getEmail(), manager.getEmail(), client.getUsername(),
+                reservation.getVehicle().getCarModel().getModelName(), reservation.getVehicle().getLocation().getCity(),
+                reservation.getVehicle().getCarModel().getCompany().getId(), reservation.getVehicle().getCarModel().getCompany().getCompanyName(),
+                input.getStartTime(), input.getEndTime()));
+        jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
+//        System.out.println(q.getData());
+//        System.out.println(client);
+//        System.out.println(manager);
         return new ServiceResponse<>(true, "Reservation created", 201);
 
     }
@@ -291,5 +314,18 @@ public class RentServiceImplementation implements RentService {
     @Override
     public ServiceResponse<List<GetVehicleDto>> getAvailableVehiclesDto(FindVehiclesDto findVehiclesDto) {
         return null;
+    }
+
+    private RentUserDto getManager(Long companyId) {
+        RentUserDto manager = null;
+        ResponseEntity<ServiceResponse<RentUserDto>> response = null;
+        try {
+            response = userServiceRestTemplate.exchange("/findManagerEmail/" + companyId,
+                    HttpMethod.GET, null, new ParameterizedTypeReference<ServiceResponse<RentUserDto>>() {});
+            manager = response.getBody().getData();
+        } catch (Exception e) {
+            return null;
+        }
+        return manager;
     }
 }
