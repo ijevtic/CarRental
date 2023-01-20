@@ -4,7 +4,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 
 @Entity
-@Table(indexes = {@Index(columnList = "name", unique = true)})
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

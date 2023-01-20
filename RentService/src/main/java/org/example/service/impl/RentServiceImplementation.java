@@ -93,13 +93,20 @@ public class RentServiceImplementation implements RentService {
 
     @Override
     public ServiceResponse<Boolean> editCompanyDesc(String jwt, EditCompanyDto editCompanyDto) {
-        Long companyId = tokenService.getCompanyId(jwt);
-        EditCompanyDto oldCompanyDto = companyRepository.findCompanyById(companyId).map(companyMapper::companyToEditCompanyDto).orElse(null);
-        if (oldCompanyDto == null) {
-            return new ServiceResponse<>(false, "Company not found", 404);
+        Pair<String, Long> userInfo = tokenService.getUserInfo(jwt);
+        EditCompanyDto oldCompanyDto = companyRepository.findCompanyById(editCompanyDto.getId())
+                .map(companyMapper::companyToEditCompanyDto).orElse(null);
+        if(oldCompanyDto == null) {
+            return new ServiceResponse<>(false, "Company with that id does not exist", 400);
+        }
+        if(!userInfo.getFirst().equals("ADMIN")) {
+            Long companyId = tokenService.getCompanyId(jwt);
+            if (!companyId.equals(editCompanyDto.getId())) {
+                return new ServiceResponse<>(false, "You are not authorized to edit this company", 403);
+            }
         }
         Company updateCompany = companyMapper.editCompanyDtoToCompany(oldCompanyDto, editCompanyDto);
-        companyRepository.updateCompanyById(companyId, updateCompany.getCompanyName(), updateCompany.getDescription());
+        companyRepository.updateCompanyById(editCompanyDto.getId(), updateCompany.getCompanyName(), updateCompany.getDescription());
         return new ServiceResponse<>(true, "Company updated", 200);
     }
 

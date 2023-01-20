@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dto.ANotification;
 import org.example.dto.pop.PopActivateAccount;
 import org.example.dto.NotificationMQ;
+import org.example.dto.pop.PopCancel;
+import org.example.dto.pop.PopPassword;
+import org.example.dto.pop.PopReservation;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +37,23 @@ public class MessageHelper {
             System.out.println(json);
             NotificationMQ data = objectMapper.readValue(json, NotificationMQ.class);
             if(data.getType().equals("ACTIVATE")) {
-                System.out.println("usooooo");
                 NotificationMQ<PopActivateAccount> notificationMQ = objectMapper.readValue(json,
                         new TypeReference<NotificationMQ<PopActivateAccount>>() {});
+                return Pair.of(data.getType(), notificationMQ.getData());
+            }
+            if(data.getType().equals("PASSWORD")) {
+                NotificationMQ<PopPassword> notificationMQ = objectMapper.readValue(json,
+                        new TypeReference<NotificationMQ<PopPassword>>() {});
+                return Pair.of(data.getType(), notificationMQ.getData());
+            }
+            if(data.getType().equals("RESERVATION")) {
+                NotificationMQ<PopReservation> notificationMQ = objectMapper.readValue(json,
+                        new TypeReference<NotificationMQ<PopReservation>>() {});
+                return Pair.of(data.getType(), notificationMQ.getData());
+            }
+            if(data.getType().equals("CANCEL")) {
+                NotificationMQ<PopCancel> notificationMQ = objectMapper.readValue(json,
+                        new TypeReference<NotificationMQ<PopCancel>>() {});
                 return Pair.of(data.getType(), notificationMQ.getData());
             }
 

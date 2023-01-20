@@ -20,6 +20,10 @@ public interface UserService {
 
     ServiceResponse<Boolean> addManager(ManagerCreateDto managerCreateDto);
 
+    ServiceResponse<Boolean> changeUser(String jwt, UserChangeDto userChangeDto);
+
+    ServiceResponse<Boolean> changeManager(String jwt, ManagerChangeDto managerChangeDto);
+
     ServiceResponse<TokenResponseDto> login(TokenRequestDto tokenRequestDto);
 
     ServiceResponse<Boolean> verifyUser(PendingUserDto pendingUserDto);

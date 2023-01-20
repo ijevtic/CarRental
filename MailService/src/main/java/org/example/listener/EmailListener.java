@@ -26,7 +26,6 @@ public class EmailListener {
         emailService.sendSimpleMessage(mailDto.getClientEmail(), mailDto.getClientSubject(), mailDto.getClientMessage());
         if(mailDto.getManagerEmail() != null)
             emailService.sendSimpleMessage(mailDto.getManagerEmail(), mailDto.getManagerSubject(), mailDto.getManagerMessage());
-        }
     }
 }
 

@@ -1,16 +1,17 @@
-package org.example.client.notificationservice;
+package org.example.client.notificationservice.pop;
 
-public class NotifActivateAccount {
+
+public class PopActivateAccount extends ANotification {
     private String email;
+    private String username;
     private String token;
 
-    private String username;
-
-    public NotifActivateAccount() {
+    public PopActivateAccount() {
     }
 
-    public NotifActivateAccount(String email, String token) {
+    public PopActivateAccount(String email, String username, String token) {
         this.email = email;
+        this.username = username;
         this.token = token;
     }
 

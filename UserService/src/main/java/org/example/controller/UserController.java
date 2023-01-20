@@ -3,9 +3,8 @@ package org.example.controller;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.example.client.notificationservice.NotifActivateAccount;
 import org.example.client.notificationservice.NotificationMQ;
-import org.example.client.notificationservice.Proba;
+import org.example.client.notificationservice.pop.PopActivateAccount;
 import org.example.dto.*;
 import org.example.listener.helper.MessageHelper;
 import org.example.security.CheckSecurity;
@@ -95,6 +94,24 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Change user")
+    @PostMapping("/changeUser")
+    @CheckSecurity(roles = {"ADMIN", "USER"})
+    public ResponseEntity<ServiceResponse<Boolean>> changeUser(@RequestHeader("Authorization") String authorization,
+                                                               @RequestBody @Valid UserChangeDto userChangeDto) {
+        ServiceResponse<Boolean> response = userService.changeUser(authorization, userChangeDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "Change manager")
+    @PostMapping("/changeManager")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
+    public ResponseEntity<ServiceResponse<Boolean>> changeManager(@RequestHeader("Authorization") String authorization,
+                                                               @RequestBody @Valid ManagerChangeDto managerChangeDto) {
+        ServiceResponse<Boolean> response = userService.changeManager(authorization, managerChangeDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
     @ApiOperation(value = "Login")
     @PostMapping("/login")
     public ResponseEntity<ServiceResponse<TokenResponseDto>> loginUser(@RequestBody @Valid TokenRequestDto tokenRequestDto) {
@@ -112,13 +129,13 @@ public class UserController {
     @ApiOperation(value = "Lol")
     @GetMapping("/lol")
     public ResponseEntity<ServiceResponse<Boolean>> lol() {
-        NotificationMQ<NotifActivateAccount> q = new NotificationMQ<>();
-        q.setType("ACTIVATE");
-        q.setData(new NotifActivateAccount("mejl mejl", "kod kod"));
+//        NotificationMQ<PopActivateAccount> q = new NotificationMQ<>();
+//        q.setType("ACTIVATE");
+//        q.setData(new PopActivateAccount("mejl mejl", "kod kod"));
 //        Proba proba = new Proba();
 //        proba.setA("Aaaa");
 //        proba.setB(23);
-        jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
+//        jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
         return new ResponseEntity<>(new ServiceResponse<>(true,"aa",200), HttpStatus.OK);
     }
 }

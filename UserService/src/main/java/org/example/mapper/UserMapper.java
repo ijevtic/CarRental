@@ -1,12 +1,10 @@
 package org.example.mapper;
 
 import org.example.domain.User;
-import org.example.dto.AUserCreateDto;
-import org.example.dto.ManagerCreateDto;
-import org.example.dto.UserCreateDto;
-import org.example.dto.UserDto;
+import org.example.dto.*;
 import org.example.repository.RoleRepository;
 import org.example.repository.StateRepository;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -55,6 +53,137 @@ public class UserMapper {
         user.setUsername(userCreateDto.getUsername());
         user.setPassword(userCreateDto.getPassword());
         user.setState(stateRepository.findStateByName("NOT_VERIFIED").get());
+        return user;
+    }
+
+    public UserChangeDto userToUserChangeDto(User user) {
+        UserChangeDto userChangeDto = new UserChangeDto();
+        userChangeDto.setEmail(user.getEmail());
+        userChangeDto.setFirstName(user.getFirstName());
+        userChangeDto.setLastName(user.getLastName());
+        userChangeDto.setUsername(user.getUsername());
+        userChangeDto.setPassportNumber(user.getPassportNumber());
+        userChangeDto.setBirthDate(user.getBirthDate());
+        userChangeDto.setPhoneNumber(user.getPhoneNumber());
+        return userChangeDto;
+    }
+
+    public ManagerChangeDto userToManagerChangeDto(User user) {
+        ManagerChangeDto managerChangeDto = new ManagerChangeDto();
+        managerChangeDto.setEmail(user.getEmail());
+        managerChangeDto.setFirstName(user.getFirstName());
+        managerChangeDto.setLastName(user.getLastName());
+        managerChangeDto.setUsername(user.getUsername());
+        managerChangeDto.setBirthDate(user.getBirthDate());
+        managerChangeDto.setPhoneNumber(user.getPhoneNumber());
+        managerChangeDto.setStartWorkDate(user.getStartWorkDate());
+        return managerChangeDto;
+    }
+
+    public Pair<ManagerChangeDto, Boolean> mergeManagerChangeDto(ManagerChangeDto old, ManagerChangeDto newUser) {
+        ManagerChangeDto userChangeDto = new ManagerChangeDto();
+        if(newUser.getEmail() != null) {
+            userChangeDto.setEmail(newUser.getEmail());
+        } else {
+            userChangeDto.setEmail(old.getEmail());
+        }
+        if(newUser.getFirstName() != null) {
+            userChangeDto.setFirstName(newUser.getFirstName());
+        } else {
+            userChangeDto.setFirstName(old.getFirstName());
+        }
+        if(newUser.getLastName() != null) {
+            userChangeDto.setLastName(newUser.getLastName());
+        } else {
+            userChangeDto.setLastName(old.getLastName());
+        }
+        if(newUser.getUsername() != null) {
+            userChangeDto.setUsername(newUser.getUsername());
+        } else {
+            userChangeDto.setUsername(old.getUsername());
+        }
+        if(newUser.getBirthDate() != null) {
+            userChangeDto.setBirthDate(newUser.getBirthDate());
+        } else {
+            userChangeDto.setBirthDate(old.getBirthDate());
+        }
+        if(newUser.getPhoneNumber() != null) {
+            userChangeDto.setPhoneNumber(newUser.getPhoneNumber());
+        } else {
+            userChangeDto.setPhoneNumber(old.getPhoneNumber());
+        }
+        if(newUser.getStartWorkDate() != null) {
+            userChangeDto.setStartWorkDate(newUser.getStartWorkDate());
+        } else {
+            userChangeDto.setStartWorkDate(old.getStartWorkDate());
+        }
+        boolean changePassword = false;
+        if(newUser.getPassword() != null) {
+            userChangeDto.setPassword(newUser.getPassword());
+            changePassword = true;
+        } else {
+            userChangeDto.setPassword(old.getPassword());
+        }
+        return Pair.of(userChangeDto, changePassword);
+    }
+
+    public Pair<UserChangeDto, Boolean> mergeUserChangeDto(UserChangeDto old, UserChangeDto newUser) {
+        UserChangeDto userChangeDto = new UserChangeDto();
+        if(newUser.getEmail() != null) {
+            userChangeDto.setEmail(newUser.getEmail());
+        } else {
+            userChangeDto.setEmail(old.getEmail());
+        }
+        if(newUser.getFirstName() != null) {
+            userChangeDto.setFirstName(newUser.getFirstName());
+        } else {
+            userChangeDto.setFirstName(old.getFirstName());
+        }
+        if(newUser.getLastName() != null) {
+            userChangeDto.setLastName(newUser.getLastName());
+        } else {
+            userChangeDto.setLastName(old.getLastName());
+        }
+        if(newUser.getUsername() != null) {
+            userChangeDto.setUsername(newUser.getUsername());
+        } else {
+            userChangeDto.setUsername(old.getUsername());
+        }
+        if(newUser.getPassportNumber() != null) {
+            userChangeDto.setPassportNumber(newUser.getPassportNumber());
+        } else {
+            userChangeDto.setPassportNumber(old.getPassportNumber());
+        }
+        if(newUser.getBirthDate() != null) {
+            userChangeDto.setBirthDate(newUser.getBirthDate());
+        } else {
+            userChangeDto.setBirthDate(old.getBirthDate());
+        }
+        if(newUser.getPhoneNumber() != null) {
+            userChangeDto.setPhoneNumber(newUser.getPhoneNumber());
+        } else {
+            userChangeDto.setPhoneNumber(old.getPhoneNumber());
+        }
+        boolean changePassword = false;
+        if(newUser.getPassword() != null) {
+            userChangeDto.setPassword(newUser.getPassword());
+            changePassword = true;
+        } else {
+            userChangeDto.setPassword(old.getPassword());
+        }
+        return Pair.of(userChangeDto, changePassword);
+    }
+
+    public User userChangeDtoToUser(UserChangeDto userChangeDto) {
+        User user = new User();
+        user.setEmail(userChangeDto.getEmail());
+        user.setFirstName(userChangeDto.getFirstName());
+        user.setLastName(userChangeDto.getLastName());
+        user.setUsername(userChangeDto.getUsername());
+        user.setPassportNumber(userChangeDto.getPassportNumber());
+        user.setBirthDate(userChangeDto.getBirthDate());
+        user.setPhoneNumber(userChangeDto.getPhoneNumber());
+        user.setPassword(userChangeDto.getPassword());
         return user;
     }
 }

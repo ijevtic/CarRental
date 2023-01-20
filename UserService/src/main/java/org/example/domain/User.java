@@ -18,7 +18,7 @@ public class User {
     private State state;
     private String email;
     private String phoneNumber;
-    private Date birthDate;
+    private Integer birthDate;
     private String passportNumber;
     private int totalRentDays;
     private Long companyId;
@@ -120,11 +120,11 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public Date getBirthDate() {
+    public Integer getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(Date birthDate) {
+    public void setBirthDate(Integer birthDate) {
         this.birthDate = birthDate;
     }
 

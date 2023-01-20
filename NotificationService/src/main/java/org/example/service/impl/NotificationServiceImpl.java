@@ -44,8 +44,7 @@ public class NotificationServiceImpl implements NotificationService {
         String typeName = null;
         String mailSubject = null;
         List<String> args = null;
-
-
+        System.out.println(message);
         if(!message.getFirst().equals("ACTIVATE") && !message.getFirst().equals("CANCEL") &&
                 !message.getFirst().equals("PASSWORD") && !message.getFirst().equals("RESERVATION")) {
             return;

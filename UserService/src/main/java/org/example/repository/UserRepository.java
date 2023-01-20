@@ -21,6 +21,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("update User u set u.state = :state where u.email like :usernameOrEmail or u.username like :usernameOrEmail")
     void updateState(String usernameOrEmail, State state);
 
+    @Modifying
+    @Query("update User u set u.email = :email, u.username = :username, u.firstName = :firstName, u.lastName = :lastName, u.password = :password, u.phoneNumber = :phoneNumber, u.birthDate = :birthDate, u.passportNumber = :passportNumber where u.id = :id")
+    void updateUser(Long id, String email, String username, String firstName, String lastName, String password,
+                    String phoneNumber, Integer birthDate, String passportNumber);
+
+    @Modifying
+    @Query("update User u set u.email = :email, u.username = :username, u.firstName = :firstName, u.lastName = :lastName, u.password = :password, u.phoneNumber = :phoneNumber, u.birthDate = :birthDate, u.startWorkDate = :startWorkDate where u.id = :id")
+    void updateManager(Long id, String email, String username, String firstName, String lastName, String password,
+                    String phoneNumber, Integer birthDate, String startWorkDate);
+
     @Query("select p from User p where p.username = :usernameOrEmail or p.email = :usernameOrEmail")
     Optional<User> findUserByUsernameOrEmail(String usernameOrEmail);
 

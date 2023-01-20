@@ -1,10 +1,11 @@
 package org.example.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.example.client.notificationservice.NotifActivateAccount;
 import org.example.client.notificationservice.NotificationMQ;
+import org.example.client.notificationservice.pop.PopActivateAccount;
+import org.example.client.notificationservice.pop.PopPassword;
+import org.example.client.rentservice.EditCompanyDto;
 import org.example.domain.*;
 import org.example.dto.*;
 import org.example.listener.helper.MessageHelper;
@@ -22,6 +23,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Pair;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
@@ -137,18 +140,12 @@ public class UserServiceImpl implements UserService {
         pendingUser.setEmail(user.getEmail());
         pendingUser.setVerificationCode(UtilClass.generateRandomString());
         pendingUserRepository.save(pendingUser);
-        NotificationMQ<NotifActivateAccount> q = new NotificationMQ<>();
+        NotificationMQ<PopActivateAccount> q = new NotificationMQ<>();
         q.setType("ACTIVATE");
-        q.setData(new NotifActivateAccount(user.getEmail(), pendingUser.getVerificationCode()));
+        q.setData(new PopActivateAccount(user.getEmail(), user.getUsername(), pendingUser.getVerificationCode()));
         jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
         return new ServiceResponse<>(null, "user added", 200);
     }
-
-    class Wrapper extends ServiceResponse<Long>{
-        public Wrapper(Long data, String message, int statusCode) {
-            super(data, message, statusCode);
-        }
-    };
 
     @Override
     public ServiceResponse<Boolean> addManager(ManagerCreateDto managerCreateDto) {
@@ -174,6 +171,61 @@ public class UserServiceImpl implements UserService {
         pendingUser.setVerificationCode(UtilClass.generateRandomString());
         pendingUserRepository.save(pendingUser);
         return new ServiceResponse<>(null, "manager added", 200);
+    }
+
+    @Override
+    public ServiceResponse<Boolean> changeUser(String jwt, UserChangeDto userChangeDto) {
+        Pair<String, Long> userInfo = tokenService.getUserInfo(jwt);
+        UserChangeDto userOldDto = userRepository.findById(userInfo.getSecond()).map(userMapper::userToUserChangeDto).orElse(null);
+        if(userChangeDto == null) {
+            return new ServiceResponse<>(false, "user not found", 404);
+        }
+        Pair<UserChangeDto, Boolean> info = userMapper.mergeUserChangeDto(userOldDto, userChangeDto);
+        UserChangeDto u = info.getFirst();
+        userRepository.updateUser(userInfo.getSecond(), u.getEmail(),u.getUsername(), u.getFirstName(),
+                u.getLastName(), u.getPassword(), u.getPhoneNumber(), u.getBirthDate(), u.getPassportNumber());
+        if(info.getSecond()) {
+            NotificationMQ<PopPassword> q = new NotificationMQ<>();
+            q.setType("PASSWORD");
+            q.setData(new PopPassword(u.getEmail(), u.getUsername()));
+            jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
+        }
+        return new ServiceResponse<>(true, "user changed", 200);
+    }
+
+    @Override
+    public ServiceResponse<Boolean> changeManager(String jwt, ManagerChangeDto managerChangeDto) {
+        Pair<String, Long> userInfo = tokenService.getUserInfo(jwt);
+        Long managerId = tokenService.getUserId(jwt);
+        ManagerChangeDto managerOldDto = userRepository.findById(managerId).map(userMapper::userToManagerChangeDto).orElse(null);
+        if(managerOldDto == null) {
+            return new ServiceResponse<>(false, "manager not found", 404);
+        }
+        Pair<ManagerChangeDto, Boolean> info = userMapper.mergeManagerChangeDto(managerOldDto, managerChangeDto);
+        ManagerChangeDto u = info.getFirst();
+        userRepository.updateManager(managerId, u.getEmail(),u.getUsername(), u.getFirstName(),
+                u.getLastName(), u.getPassword(), u.getPhoneNumber(), u.getBirthDate(), u.getStartWorkDate());
+        if(info.getSecond()) {
+            NotificationMQ<PopPassword> q = new NotificationMQ<>();
+            q.setType("PASSWORD");
+            q.setData(new PopPassword(u.getEmail(), u.getUsername()));
+            jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
+        }
+        if(managerChangeDto.getCompanyName() != null) {
+            Boolean ok = false;
+            ResponseEntity<ServiceResponse<Boolean>> response = null;
+            HttpEntity<EditCompanyDto> requestEntity = new HttpEntity<>(new EditCompanyDto(userInfo.getSecond(), managerChangeDto.getCompanyName(), null));
+            try {
+                response = rentServiceRestTemplate.exchange("/editCompanyDesc/",
+                        HttpMethod.POST, requestEntity,
+                        new ParameterizedTypeReference<ServiceResponse<Boolean>>() {});
+                ok = response.getBody().getData();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ServiceResponse<>(null, "company with a given name does not exist!", 404);
+            }
+        }
+        return new ServiceResponse<>(true, "user changed", 200);
     }
 
     @Override

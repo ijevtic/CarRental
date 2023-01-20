@@ -1,4 +1,4 @@
-package org.example.dto;
+package org.example.client.rentservice;
 
 import javax.validation.constraints.NotBlank;
 
@@ -9,6 +9,12 @@ public class EditCompanyDto {
     private String description;
 
     public EditCompanyDto() {
+    }
+
+    public EditCompanyDto(Long id, String companyName, String description) {
+        this.id = id;
+        this.companyName = companyName;
+        this.description = description;
     }
 
     public Long getId() {
