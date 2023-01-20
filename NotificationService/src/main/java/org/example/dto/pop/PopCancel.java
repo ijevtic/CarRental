@@ -1,6 +1,8 @@
-package org.example.dto;
+package org.example.dto.pop;
 
-public class PopReservation extends ANotification {
+import org.example.dto.ANotification;
+
+public class PopCancel extends ANotification {
     private String clientEmail;
     private String managerEmail;
     private String clientUsername;
@@ -10,15 +12,6 @@ public class PopReservation extends ANotification {
     private String companyName;
     private Integer startTime;
     private Integer endTime;
-    //TODO add price
-
-    public Long getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
-    }
 
     public String getClientEmail() {
         return clientEmail;
@@ -58,6 +51,14 @@ public class PopReservation extends ANotification {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 
     public String getCompanyName() {

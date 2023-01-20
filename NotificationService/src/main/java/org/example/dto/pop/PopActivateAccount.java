@@ -1,6 +1,8 @@
-package org.example.dto;
+package org.example.dto.pop;
 
-public class PopActivateAccount extends ANotification{
+import org.example.dto.ANotification;
+
+public class PopActivateAccount extends ANotification {
     private String email;
     private String username;
     private String token;

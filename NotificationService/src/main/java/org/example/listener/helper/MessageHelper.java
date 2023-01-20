@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dto.ANotification;
-import org.example.dto.PopActivateAccount;
+import org.example.dto.pop.PopActivateAccount;
 import org.example.dto.NotificationMQ;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;

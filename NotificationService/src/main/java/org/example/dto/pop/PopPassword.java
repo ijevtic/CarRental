@@ -1,4 +1,6 @@
-package org.example.dto;
+package org.example.dto.pop;
+
+import org.example.dto.ANotification;
 
 public class PopPassword extends ANotification {
     private String email;
