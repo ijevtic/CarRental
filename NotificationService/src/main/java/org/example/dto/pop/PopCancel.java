@@ -12,6 +12,15 @@ public class PopCancel extends ANotification {
     private String companyName;
     private Integer startTime;
     private Integer endTime;
+    private Long reservationId;
+
+    public Long getReservationId() {
+        return reservationId;
+    }
+
+    public void setReservationId(Long reservationId) {
+        this.reservationId = reservationId;
+    }
 
     public String getClientEmail() {
         return clientEmail;

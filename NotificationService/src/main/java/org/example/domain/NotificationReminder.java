@@ -1,35 +1,48 @@
-package org.example.dto.pop;
+package org.example.domain;
 
-import org.example.dto.ANotification;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-public class PopReservation extends ANotification {
+@Entity
+public class NotificationReminder {
+    @Id
+    private Long id;
     private String clientEmail;
     private String managerEmail;
     private String clientUsername;
     private String modelName;
     private String city;
-    private Long companyId;
     private String companyName;
     private Integer startTime;
-    private Integer endTime;
-    private Long reservationId;
 
-    public Long getReservationId() {
-        return reservationId;
+    public NotificationReminder() {
     }
 
-    public void setReservationId(Long reservationId) {
-        this.reservationId = reservationId;
+    public NotificationReminder(Long id, String clientEmail, String managerEmail, String clientUsername, String modelName, String city, String companyName, Integer startTime) {
+        this.id = id;
+        this.clientEmail = clientEmail;
+        this.managerEmail = managerEmail;
+        this.clientUsername = clientUsername;
+        this.modelName = modelName;
+        this.city = city;
+        this.companyName = companyName;
+        this.startTime = startTime;
     }
 
-    //TODO add price
-
-    public Long getCompanyId() {
-        return companyId;
+    public Integer getStartTime() {
+        return startTime;
     }
 
-    public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
+    public void setStartTime(Integer startTime) {
+        this.startTime = startTime;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getClientEmail() {
@@ -78,21 +91,5 @@ public class PopReservation extends ANotification {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
-    }
-
-    public Integer getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Integer startTime) {
-        this.startTime = startTime;
-    }
-
-    public Integer getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Integer endTime) {
-        this.endTime = endTime;
     }
 }

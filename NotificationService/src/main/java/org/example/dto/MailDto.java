@@ -13,6 +13,17 @@ public class MailDto {
     private String clientMessage;
     private String managerMessage;
 
+    public MailDto() {
+    }
+
+    public MailDto(String clientEmail, String managerEmail, String clientSubject, String managerSubject, String clientMessage, String managerMessage) {
+        this.clientEmail = clientEmail;
+        this.managerEmail = managerEmail;
+        this.clientSubject = clientSubject;
+        this.managerSubject = managerSubject;
+        this.clientMessage = clientMessage;
+        this.managerMessage = managerMessage;
+    }
 
     public String getClientEmail() {
         return clientEmail;

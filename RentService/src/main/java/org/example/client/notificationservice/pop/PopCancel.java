@@ -11,8 +11,9 @@ public class PopCancel extends ANotification {
     private String companyName;
     private Integer startTime;
     private Integer endTime;
+    private Long reservationId;
 
-    public PopCancel(String clientEmail, String managerEmail, String clientUsername, String modelName, String city, Long companyId, String companyName, Integer startTime, Integer endTime) {
+    public PopCancel(String clientEmail, String managerEmail, String clientUsername, String modelName, String city, Long companyId, String companyName, Integer startTime, Integer endTime, Long resrvationId) {
         this.clientEmail = clientEmail;
         this.managerEmail = managerEmail;
         this.clientUsername = clientUsername;
@@ -22,6 +23,15 @@ public class PopCancel extends ANotification {
         this.companyName = companyName;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.reservationId = resrvationId;
+    }
+
+    public Long getReservationId() {
+        return reservationId;
+    }
+
+    public void setReservationId(Long reservationId) {
+        this.reservationId = reservationId;
     }
 
     public String getClientEmail() {

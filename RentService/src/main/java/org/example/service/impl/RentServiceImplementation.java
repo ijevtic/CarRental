@@ -254,13 +254,13 @@ public class RentServiceImplementation implements RentService {
             return new ServiceResponse<>(false, "No vehicles available in given time range", 404);
         }
         RentUserDto manager = getManager(reservation.getVehicle().getCarModel().getCompany().getId());
-        reservationRepository.save(reservation);
+        Long reservationId = reservationRepository.save(reservation).getId();
         NotificationMQ<PopReservation> q = new NotificationMQ<>();
         q.setType("RESERVATION");
         q.setData(new PopReservation(client.getEmail(), manager.getEmail(), client.getUsername(),
                 reservation.getVehicle().getCarModel().getModelName(), reservation.getVehicle().getLocation().getCity(),
                 reservation.getVehicle().getCarModel().getCompany().getId(), reservation.getVehicle().getCarModel().getCompany().getCompanyName(),
-                input.getStartTime(), input.getEndTime()));
+                input.getStartTime(), input.getEndTime(), reservationId));
         jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
 //        System.out.println(q.getData());
 //        System.out.println(client);
@@ -297,7 +297,7 @@ public class RentServiceImplementation implements RentService {
         q.setData(new PopCancel(client.getEmail(), manager.getEmail(), client.getUsername(),
                 reservation.getVehicle().getCarModel().getModelName(), reservation.getVehicle().getLocation().getCity(),
                 reservation.getVehicle().getCarModel().getCompany().getId(), reservation.getVehicle().getCarModel().getCompany().getCompanyName(),
-                reservation.getStartTime(), reservation.getEndTime()));
+                reservation.getStartTime(), reservation.getEndTime(), removeReservationDto.getId()));
         jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
         return new ServiceResponse<>(true, "Reservation deleted", 200);
     }
