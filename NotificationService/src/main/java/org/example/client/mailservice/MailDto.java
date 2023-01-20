@@ -1,4 +1,4 @@
-package org.example.dto;
+package org.example.client.mailservice;
 
 import javax.validation.constraints.Email;
 import java.util.List;
@@ -6,12 +6,11 @@ import java.util.List;
 public class MailDto {
     @Email
     private String clientEmail;
-    private String managerEmail;
+    private List<String> managerEmails;
     private String clientSubject;
     private String managerSubject;
     private String clientMessage;
     private String managerMessage;
-
 
     public String getClientEmail() {
         return clientEmail;
@@ -21,12 +20,12 @@ public class MailDto {
         this.clientEmail = clientEmail;
     }
 
-    public String getManagerEmail() {
-        return managerEmail;
+    public List<String> getManagerEmails() {
+        return managerEmails;
     }
 
-    public void setManagerEmail(String managerEmail) {
-        this.managerEmail = managerEmail;
+    public void setManagerEmails(List<String> managerEmails) {
+        this.managerEmails = managerEmails;
     }
 
     public String getClientSubject() {

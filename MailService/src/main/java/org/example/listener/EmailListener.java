@@ -24,8 +24,8 @@ public class EmailListener {
     public void sendNotification(Message message) throws JMSException {
         MailDto mailDto = messageHelper.getMessage(message, MailDto.class);
         emailService.sendSimpleMessage(mailDto.getClientEmail(), mailDto.getClientSubject(), mailDto.getClientMessage());
-        for(String managerMail : mailDto.getManagerEmails()) {
-            emailService.sendSimpleMessage(managerMail, mailDto.getManagerSubject(), mailDto.getManagerMessage());
+        if(mailDto.getManagerEmail() != null)
+            emailService.sendSimpleMessage(mailDto.getManagerEmail(), mailDto.getManagerSubject(), mailDto.getManagerMessage());
         }
     }
 }

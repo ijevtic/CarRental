@@ -3,6 +3,9 @@ package org.example.controller;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.example.client.notificationservice.NotifActivateAccount;
+import org.example.client.notificationservice.NotificationMQ;
+import org.example.client.notificationservice.Proba;
 import org.example.dto.*;
 import org.example.listener.helper.MessageHelper;
 import org.example.security.CheckSecurity;
@@ -25,14 +28,14 @@ public class UserController {
     private UserService userService;
     private JmsTemplate jmsTemplate;
     private MessageHelper messageHelper;
-    private String orderDestination;
+    private String notificationQueue;
 
     public UserController(UserService userService, JmsTemplate jmsTemplate, MessageHelper messageHelper,
-                          @Value("${async.notifications}") String orderDestination) {
+                          @Value("${async.notifications}") String notificationQueue) {
         this.userService = userService;
         this.jmsTemplate = jmsTemplate;
         this.messageHelper = messageHelper;
-        this.orderDestination = orderDestination;
+        this.notificationQueue = notificationQueue;
     }
 
     @ApiOperation(value = "Get all users")
@@ -109,7 +112,13 @@ public class UserController {
     @ApiOperation(value = "Lol")
     @GetMapping("/lol")
     public ResponseEntity<ServiceResponse<Boolean>> lol() {
-        jmsTemplate.convertAndSend(orderDestination, messageHelper.createTextMessage("lol"));
+        NotificationMQ<NotifActivateAccount> q = new NotificationMQ<>();
+        q.setType("ACTIVATE");
+        q.setData(new NotifActivateAccount("mejl mejl", "kod kod"));
+//        Proba proba = new Proba();
+//        proba.setA("Aaaa");
+//        proba.setB(23);
+        jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
         return new ResponseEntity<>(new ServiceResponse<>(true,"aa",200), HttpStatus.OK);
     }
 }

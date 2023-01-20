@@ -24,7 +24,7 @@ public class NotificationController {
     @ApiOperation(value = "Send Email")
     @PostMapping("/login")
     public ResponseEntity<String> sendEmail(@RequestBody @Valid String email) {
-        notificationService.sendEmail(email);
+//        notificationService.sendEmail(email);
         return new ResponseEntity<>("response", HttpStatus.OK);
     }
 }

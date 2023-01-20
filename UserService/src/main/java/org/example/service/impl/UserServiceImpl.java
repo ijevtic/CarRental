@@ -3,8 +3,11 @@ package org.example.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.example.client.notificationservice.NotifActivateAccount;
+import org.example.client.notificationservice.NotificationMQ;
 import org.example.domain.*;
 import org.example.dto.*;
+import org.example.listener.helper.MessageHelper;
 import org.example.mapper.PendingUserMapper;
 import org.example.mapper.UserMapper;
 import org.example.repository.PendingUserRepository;
@@ -15,11 +18,13 @@ import org.example.security.service.TokenService;
 import org.example.service.UserService;
 import org.example.util.ServiceResponse;
 import org.example.util.UtilClass;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -36,12 +41,15 @@ public class UserServiceImpl implements UserService {
     private PendingUserMapper pendingUserMapper;
     private RoleRepository roleRepository;
     private StateRepository stateRepository;
-
     private RestTemplate rentServiceRestTemplate;
+    private JmsTemplate jmsTemplate;
+    private MessageHelper messageHelper;
+    private String notificationQueue;
 
     public UserServiceImpl(TokenService tokenService, UserRepository userRepository, PendingUserRepository pendingUserRepository,
                            UserMapper userMapper, PendingUserMapper pendingUserMapper, RoleRepository roleRepository,
-                           StateRepository stateRepository, RestTemplate rentServiceRestTemplate) {
+                           StateRepository stateRepository, RestTemplate rentServiceRestTemplate, JmsTemplate jmsTemplate,
+                           MessageHelper messageHelper, @Value("${async.notifications}") String notificationQueue) {
         this.tokenService = tokenService;
         this.userRepository = userRepository;
         this.pendingUserRepository = pendingUserRepository;
@@ -50,6 +58,9 @@ public class UserServiceImpl implements UserService {
         this.roleRepository = roleRepository;
         this.stateRepository = stateRepository;
         this.rentServiceRestTemplate = rentServiceRestTemplate;
+        this.jmsTemplate = jmsTemplate;
+        this.messageHelper = messageHelper;
+        this.notificationQueue = notificationQueue;
     }
 
     @Override
@@ -126,6 +137,10 @@ public class UserServiceImpl implements UserService {
         pendingUser.setEmail(user.getEmail());
         pendingUser.setVerificationCode(UtilClass.generateRandomString());
         pendingUserRepository.save(pendingUser);
+        NotificationMQ<NotifActivateAccount> q = new NotificationMQ<>();
+        q.setType("ACTIVATE");
+        q.setData(new NotifActivateAccount(user.getEmail(), pendingUser.getVerificationCode()));
+        jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
         return new ServiceResponse<>(null, "user added", 200);
     }
 

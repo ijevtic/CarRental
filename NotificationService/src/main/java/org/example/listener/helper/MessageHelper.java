@@ -1,7 +1,12 @@
 package org.example.listener.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.dto.ANotification;
+import org.example.dto.PopActivateAccount;
+import org.example.dto.NotificationMQ;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import javax.jms.JMSException;
@@ -23,22 +28,26 @@ public class MessageHelper {
         this.objectMapper = objectMapper;
     }
 
-    public <T> T getMessage(Message message, Class<T> clazz) throws RuntimeException, JMSException {
+    public Pair<String, ANotification> getMessage(Message message) throws RuntimeException, JMSException {
         try {
             String json = ((TextMessage) message).getText();
-            T data = objectMapper.readValue(json, clazz);
-
-            Set<ConstraintViolation<T>> violations = validator.validate(data);
-            if (violations.isEmpty()) {
-                return data;
+            System.out.println(json);
+            NotificationMQ data = objectMapper.readValue(json, NotificationMQ.class);
+            if(data.getType().equals("ACTIVATE")) {
+                System.out.println("usooooo");
+                NotificationMQ<PopActivateAccount> notificationMQ = objectMapper.readValue(json,
+                        new TypeReference<NotificationMQ<PopActivateAccount>>() {});
+                return Pair.of(data.getType(), notificationMQ.getData());
             }
 
-            printViolationsAndThrowException(violations);
-            return null;
+
         } catch (IOException exception) {
+            exception.printStackTrace();
             throw new RuntimeException("Message parsing fails.", exception);
         }
+        return null;
     }
+
 
     public String createTextMessage(Object object) {
         try {

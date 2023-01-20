@@ -10,14 +10,10 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String description;
     @Email
     private String clientEmail;
     @Email
     private String managerEmail;
-    private String firstName;
-    private String lastName;
-    private String verificationCode;
     private Integer time;
     @ManyToOne
     private Type type;
@@ -38,14 +34,6 @@ public class Notification {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getClientEmail() {
         return clientEmail;
     }
@@ -62,28 +50,12 @@ public class Notification {
         this.managerEmail = managerEmail;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public Integer getTime() {
+        return time;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getVerificationCode() {
-        return verificationCode;
-    }
-
-    public void setVerificationCode(String verificationCode) {
-        this.verificationCode = verificationCode;
+    public void setTime(Integer time) {
+        this.time = time;
     }
 
     public Type getType() {
@@ -92,13 +64,5 @@ public class Notification {
 
     public void setType(Type type) {
         this.type = type;
-    }
-
-    public Integer getTime() {
-        return time;
-    }
-
-    public void setTime(Integer time) {
-        this.time = time;
     }
 }
