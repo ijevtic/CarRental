@@ -1,6 +1,6 @@
 package org.example.dto;
 
-public class PopCancel {
+public class PopCancel extends ANotification {
     private String clientEmail;
     private String managerEmail;
     private String clientUsername;

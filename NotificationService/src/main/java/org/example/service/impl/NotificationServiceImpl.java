@@ -63,6 +63,15 @@ public class NotificationServiceImpl implements NotificationService {
                     notification.getCompanyName(), String.valueOf(notification.getStartTime()),
                     String.valueOf(notification.getEndTime()));
         }
+        if(message.getFirst().equals("CANCEL")) {
+            typeName = "CANCEL";
+            PopCancel notification = (PopCancel) message.getSecond();
+            mailDto.setClientEmail(notification.getClientEmail());
+            mailDto.setManagerEmail(notification.getManagerEmail());
+            args = List.of(notification.getModelName(), notification.getCity(),
+                    notification.getCompanyName(), String.valueOf(notification.getStartTime()),
+                    String.valueOf(notification.getEndTime()));
+        }
         if(mailDto == null)
             return;
         Type type = typeRepository.findTypeByName(typeName).orElse(null);
@@ -70,6 +79,7 @@ public class NotificationServiceImpl implements NotificationService {
         mailSubject = type.getSubject();
         mailDto.setClientSubject(mailSubject);
         mailDto.setClientMessage(makeText(type.getDescription(), args));
+        mailDto.setManagerMessage(mailDto.getClientMessage());
         jmsTemplate.convertAndSend(mailQueue, messageHelper.createTextMessage(mailDto));
     }
 
