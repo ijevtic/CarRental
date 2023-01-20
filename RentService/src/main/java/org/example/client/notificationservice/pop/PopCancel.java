@@ -12,6 +12,18 @@ public class PopCancel extends ANotification {
     private Integer startTime;
     private Integer endTime;
 
+    public PopCancel(String clientEmail, String managerEmail, String clientUsername, String modelName, String city, Long companyId, String companyName, Integer startTime, Integer endTime) {
+        this.clientEmail = clientEmail;
+        this.managerEmail = managerEmail;
+        this.clientUsername = clientUsername;
+        this.modelName = modelName;
+        this.city = city;
+        this.companyId = companyId;
+        this.companyName = companyName;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     public String getClientEmail() {
         return clientEmail;
     }

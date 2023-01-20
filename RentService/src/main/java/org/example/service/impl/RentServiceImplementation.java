@@ -1,6 +1,7 @@
 package org.example.service.impl;
 
 import org.example.client.notificationservice.NotificationMQ;
+import org.example.client.notificationservice.pop.PopCancel;
 import org.example.client.notificationservice.pop.PopReservation;
 import org.example.client.userservice.RentUserDto;
 import org.example.domain.*;
@@ -269,9 +270,9 @@ public class RentServiceImplementation implements RentService {
     }
 
     @Override
-    public ServiceResponse<Boolean> removeReservation(String jwt, RemoveReservationDto addReservationDto) {
+    public ServiceResponse<Boolean> removeReservation(String jwt, RemoveReservationDto removeReservationDto) {
         Pair<String, Long> userInfo = tokenService.getUserInfo(jwt);
-        Reservation reservation = reservationRepository.findReservationById(addReservationDto.getId()).orElse(null);
+        Reservation reservation = reservationRepository.findReservationById(removeReservationDto.getId()).orElse(null);
         if(reservation == null) {
             return new ServiceResponse<>(false, "Reservation not found", 404);
         }
@@ -280,6 +281,24 @@ public class RentServiceImplementation implements RentService {
             return new ServiceResponse<>(false, "You can't cancel this reservation", 400);
         }
         reservationRepository.delete(reservation);
+        ResponseEntity<ServiceResponse<RentUserDto>> response = null;
+        RentUserDto client = null;
+        try {
+            response = userServiceRestTemplate.exchange("/findUserEmail/" + reservation.getClientId(),
+                    HttpMethod.GET, null, new ParameterizedTypeReference<ServiceResponse<RentUserDto>>() {});
+            client = response.getBody().getData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ServiceResponse<>(false, "user with a given id does not exist!", 404);
+        }
+        RentUserDto manager = getManager(reservation.getVehicle().getCarModel().getCompany().getId());
+        NotificationMQ<PopCancel> q = new NotificationMQ<>();
+        q.setType("CANCEL");
+        q.setData(new PopCancel(client.getEmail(), manager.getEmail(), client.getUsername(),
+                reservation.getVehicle().getCarModel().getModelName(), reservation.getVehicle().getLocation().getCity(),
+                reservation.getVehicle().getCarModel().getCompany().getId(), reservation.getVehicle().getCarModel().getCompany().getCompanyName(),
+                reservation.getStartTime(), reservation.getEndTime()));
+        jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
         return new ServiceResponse<>(true, "Reservation deleted", 200);
     }
 
