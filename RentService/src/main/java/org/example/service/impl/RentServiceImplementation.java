@@ -10,10 +10,7 @@ import org.example.dto.Reservation.AddReservationDto;
 import org.example.dto.Reservation.RemoveReservationDto;
 import org.example.dto.Vehicle.*;
 import org.example.helper.MessageHelper;
-import org.example.mapper.CompanyMapper;
-import org.example.mapper.ModelMapper;
-import org.example.mapper.ReservationMapper;
-import org.example.mapper.VehicleMapper;
+import org.example.mapper.*;
 import org.example.repository.*;
 import org.example.security.service.TokenService;
 import org.example.service.RentService;
@@ -21,6 +18,7 @@ import org.example.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.util.Pair;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
@@ -268,9 +266,7 @@ public class RentServiceImplementation implements RentService {
                 reservation.getVehicle().getCarModel().getCompany().getId(), reservation.getVehicle().getCarModel().getCompany().getCompanyName(),
                 input.getStartTime(), input.getEndTime(), reservationId));
         jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
-//        System.out.println(q.getData());
-//        System.out.println(client);
-//        System.out.println(manager);
+        updateUserRentDays(userId, input.getEndTime() - input.getStartTime());
         return new ServiceResponse<>(true, "Reservation created", 201);
 
     }
@@ -305,6 +301,7 @@ public class RentServiceImplementation implements RentService {
                 reservation.getVehicle().getCarModel().getCompany().getId(), reservation.getVehicle().getCarModel().getCompany().getCompanyName(),
                 reservation.getStartTime(), reservation.getEndTime(), removeReservationDto.getId()));
         jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
+        updateUserRentDays(client.getId(), reservation.getStartTime() - reservation.getEndTime());
         return new ServiceResponse<>(true, "Reservation deleted", 200);
     }
 
@@ -354,15 +351,16 @@ public class RentServiceImplementation implements RentService {
         return manager;
     }
     @Override
-    public ServiceResponse<Boolean> addReview(String jwt, ReviewDto reviewDto){
+    public ServiceResponse<Boolean> addReview(String jwt, ReviewDto reviewDto) {
         Long userId = tokenService.getUserId(jwt);
         Reservation reservation = reservationRepository.findReservationById(reviewDto.getReservationId()).orElse(null);
-        if(reservation == null) return new ServiceResponse<>(false, "given Reservation does not exist", 400);
-        if(!Objects.equals(userId, reservation.getClientId())) return new ServiceResponse<>(false, "User with the given id did not make the given reservation", 400);
+        if (reservation == null) return new ServiceResponse<>(false, "given Reservation does not exist", 400);
+        if (!Objects.equals(userId, reservation.getClientId()))
+            return new ServiceResponse<>(false, "User with the given id did not make the given reservation", 400);
         Review review = null;
         review = reviewRepository.findReviewByReservation(reservation).orElse(null);
-        if(review != null) return new ServiceResponse<>(false, "Review for given Reservation already exists", 404);
-        if(reservation == null) {
+        if (review != null) return new ServiceResponse<>(false, "Review for given Reservation already exists", 404);
+        if (reservation == null) {
             return new ServiceResponse<>(false, "Reservation not found", 404);
         }
 
@@ -371,5 +369,15 @@ public class RentServiceImplementation implements RentService {
 
         reviewRepository.save(review);
         return new ServiceResponse<>(true, "Review created", 201);
+    }
+    private void updateUserRentDays(Long userId, Integer timeDiff) {
+        Integer daysDiff = timeDiff / 86400;
+        HttpEntity<Integer> request = new HttpEntity<>(daysDiff);
+        try {
+            userServiceRestTemplate.exchange("/changeRentDays/" + userId,
+                    HttpMethod.POST, request, new ParameterizedTypeReference<ServiceResponse<Boolean>>() {});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -27,6 +27,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
                     String phoneNumber, Integer birthDate, String passportNumber);
 
     @Modifying
+    @Query("update User u set u.totalRentDays = :totalRentDays where u.id = :id")
+    void updateRentDays(Long id, Integer totalRentDays);
+
+    @Modifying
     @Query("update User u set u.email = :email, u.username = :username, u.firstName = :firstName, u.lastName = :lastName, u.password = :password, u.phoneNumber = :phoneNumber, u.birthDate = :birthDate, u.startWorkDate = :startWorkDate where u.id = :id")
     void updateManager(Long id, String email, String username, String firstName, String lastName, String password,
                     String phoneNumber, Integer birthDate, String startWorkDate);

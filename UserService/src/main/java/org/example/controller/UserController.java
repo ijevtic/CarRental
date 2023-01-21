@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -51,6 +52,24 @@ public class UserController {
     public ResponseEntity<ServiceResponse<Page<UserDto>>> getAllUsers(@RequestHeader("Authorization") String authorization,
                                                      Pageable pageable) {
         ServiceResponse<Page<UserDto>> response = userService.findAll(pageable);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "Get user rank")
+    @GetMapping("/getRank/{id}")
+    @CheckSecurity(roles = {"ADMIN", "USER"})
+    public ResponseEntity<ServiceResponse<RankDto>> getUserRank(@RequestHeader("Authorization") String authorization
+            , @PathVariable("id") Long userId) {
+        ServiceResponse<RankDto> response = userService.getUserRank(userId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "Change number of rent days")
+    @PostMapping("/changeRentDays/{id}")
+    @CheckSecurity(roles = {"ADMIN"})
+    public ResponseEntity<ServiceResponse<Boolean>> changeRentDays(@RequestHeader("Authorization") String authorization
+            , @PathVariable("id") Long userId, @RequestBody Integer daysDiff) {
+        ServiceResponse<Boolean> response = userService.changeRentDays(userId, daysDiff);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
