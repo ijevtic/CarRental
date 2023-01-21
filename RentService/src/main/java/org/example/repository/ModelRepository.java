@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,6 +20,8 @@ public interface ModelRepository extends JpaRepository<CarModel, Long> {
     Optional<CarModel> getReferenceById(Long id);
 
     Optional<CarModel> findCarModelById(Long id);
+
+    List<CarModel> findCarModelsByCompany(Company company);
 
 
     @Modifying

@@ -4,10 +4,7 @@ import org.example.dto.*;
 import org.example.dto.Reservation.AddReservationDto;
 import org.example.dto.Reservation.RemoveReservationDto;
 import org.example.dto.Reservation.ReservationDtoFull;
-import org.example.dto.Vehicle.ChangeVehicleDto;
-import org.example.dto.Vehicle.FilterInterval;
-import org.example.dto.Vehicle.VehicleDto;
-import org.example.dto.Vehicle.VehicleFilter;
+import org.example.dto.Vehicle.*;
 import org.example.security.CheckSecurity;
 import org.example.service.RentService;
 import org.example.util.ServiceResponse;
@@ -46,6 +43,14 @@ public class RentController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @GetMapping("/getCompanyInfo/{id}")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER", "USER"})
+    public ResponseEntity<ServiceResponse<EditCompanyDto>> getCompanyInfo(@RequestHeader("Authorization") String authorization,
+                                                            @PathVariable("id") Long companyId){
+        ServiceResponse<EditCompanyDto> response = rentService.getCompanyInfo(companyId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
     @GetMapping("/getLocations")
     public ResponseEntity<ServiceResponse<List<LocationDto>>> getLocations(){
         ServiceResponse<List<LocationDto>> response = rentService.getLocations();
@@ -75,6 +80,20 @@ public class RentController {
     public ResponseEntity<ServiceResponse<Boolean>> addModel(@RequestHeader("Authorization") String authorization,
                                                                     @RequestBody AddModelDto addModelDto){
         ServiceResponse<Boolean> response = rentService.addModel(authorization, addModelDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @GetMapping("/getVehicles")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
+    public ResponseEntity<ServiceResponse<List<VehicleDtoFull>>> getVehicles(@RequestHeader("Authorization") String authorization){
+        ServiceResponse<List<VehicleDtoFull>> response = rentService.getVehicles(authorization);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @GetMapping("/getCompanyModels")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
+    public ResponseEntity<ServiceResponse<List<EditModelDto>>> getCompanyModels(@RequestHeader("Authorization") String authorization){
+        ServiceResponse<List<EditModelDto>> response = rentService.getCompanyModels(authorization);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
@@ -131,6 +150,13 @@ public class RentController {
     @CheckSecurity(roles = {"ADMIN", "USER"})
     public ResponseEntity<ServiceResponse<List<ReservationDtoFull>>> getUserReservations(@RequestHeader("Authorization") String authorization){
         ServiceResponse<List<ReservationDtoFull>> response = rentService.getUserReservations(authorization);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @GetMapping("/getCompanyReservations")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
+    public ResponseEntity<ServiceResponse<List<ReservationDtoFull>>> getCompanyReservations(@RequestHeader("Authorization") String authorization){
+        ServiceResponse<List<ReservationDtoFull>> response = rentService.getCompanyReservations(authorization);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 

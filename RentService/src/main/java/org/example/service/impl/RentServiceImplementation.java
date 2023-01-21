@@ -113,6 +113,16 @@ public class RentServiceImplementation implements RentService {
     }
 
     @Override
+    public ServiceResponse<EditCompanyDto> getCompanyInfo(Long companyId) {
+        EditCompanyDto company = companyRepository.findCompanyById(companyId)
+                .map(companyMapper::companyToEditCompanyDto).orElse(null);
+        if(company == null) {
+            return new ServiceResponse<>(null, "Company with that id does not exist", 400);
+        }
+        return new ServiceResponse<>(company, "Company found", 200);
+    }
+
+    @Override
     public ServiceResponse<List<LocationDto>> getLocations() {
         List<LocationDto> locationDtos = locationRepository.findAll().stream().map(locationMapper::locationToLocationDto)
                 .collect(Collectors.toList());
@@ -160,6 +170,22 @@ public class RentServiceImplementation implements RentService {
         carModel = modelMapper.carModelDtoToCarModel(addModelDto, companyId);
         modelRepository.save(carModel);
         return new ServiceResponse<>(true, "Car model added", 201);
+    }
+
+    @Override
+    public ServiceResponse<List<VehicleDtoFull>> getVehicles(String jwt) {
+        Long companyId = tokenService.getCompanyId(jwt);
+        List<VehicleDtoFull> list = vehicleRepository.findVehicleByCompany(companyRepository.getReferenceById(companyId).orElse(null)).stream()
+                .map(vehicleMapper::vehicleToVehicleDtoFull).collect(Collectors.toList());
+        return new ServiceResponse<>(list, "Vehicles found", 200);
+    }
+
+    @Override
+    public ServiceResponse<List<EditModelDto>> getCompanyModels(String jwt) {
+        Long companyId = tokenService.getCompanyId(jwt);
+        List<EditModelDto> list = modelRepository.findCarModelsByCompany(companyRepository.getReferenceById(companyId).orElse(null)).stream()
+                .map(modelMapper::carModelToCarModelDto).collect(Collectors.toList());
+        return new ServiceResponse<>(list, "Models found", 200);
     }
 
     @Override
@@ -359,6 +385,15 @@ public class RentServiceImplementation implements RentService {
     public ServiceResponse<List<ReservationDtoFull>> getUserReservations(String jwt) {
         Long userId = tokenService.getUserId(jwt);
         List<ReservationDtoFull> reservations = reservationRepository.findAllByClientId(userId).stream().
+                map(reservationMapper::reservationToReservationMapFull).collect(Collectors.toList());
+        return new ServiceResponse<>(reservations, "Reservations found", 200);
+    }
+
+    @Override
+    public ServiceResponse<List<ReservationDtoFull>> getCompanyReservations(String jwt) {
+        Long companyId = tokenService.getCompanyId(jwt);
+        List<ReservationDtoFull> reservations = reservationRepository
+                .findAllByCompany(companyRepository.getReferenceById(companyId).orElse(null)).stream().
                 map(reservationMapper::reservationToReservationMapFull).collect(Collectors.toList());
         return new ServiceResponse<>(reservations, "Reservations found", 200);
     }

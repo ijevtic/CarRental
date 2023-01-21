@@ -79,6 +79,7 @@ public class UserMapper {
         managerChangeDto.setBirthDate(user.getBirthDate());
         managerChangeDto.setPhoneNumber(user.getPhoneNumber());
         managerChangeDto.setStartWorkDate(user.getStartWorkDate());
+        managerChangeDto.setPassword(user.getPassword());
         return managerChangeDto;
     }
 

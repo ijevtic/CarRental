@@ -13,6 +13,26 @@ function Home(props) {
   const [profile, setProfile] = useRecoilState(profileInfo);
   let sent = false;
 
+  const fetchLocations = async () => {
+    const res = await fetch(process.env.REACT_APP_RENT_SERVICE_URL + '/getLocations', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': profile.token,
+        },
+        }).then(res => res.json())
+        .then(res => {
+          console.log(res);
+          if(res.statusCode != 200) {
+            alert(res.message)
+          }
+          return res.data;
+        }
+        )
+        .catch(error => console.error('Error:', error));
+        return res;
+  }
+
   const navigate = useNavigate();
 
   const fetchUser = () => {
@@ -54,8 +74,8 @@ function Home(props) {
       <Logout />
       <h1>Home</h1>
       {profile.data && profile.role == 'ADMIN' && <Admin fetchUser = {fetchUser}/>}
-      {profile.data && profile.role == 'USER' && <User fetchUser = {fetchUser}/>}
-      {profile.data && profile.role == 'MANAGER' && <Manager fetchUser = {fetchUser}/>}
+      {profile.data && profile.role == 'USER' && <User fetchUser = {fetchUser} fetchLocations = {fetchLocations}/>}
+      {profile.data && profile.role == 'MANAGER' && <Manager fetchUser = {fetchUser} fetchLocations = {fetchLocations}/>}
     </div>
   )
 }

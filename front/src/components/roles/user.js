@@ -37,7 +37,7 @@ function User(props) {
           <UserProfile fetchUser={props.fetchUser}/>
         </TabPanel>
         <TabPanel>
-          <Filter />
+          <Filter fetchLocations = {props.fetchLocations}/>
         </TabPanel>
         <TabPanel>
         <Reservations />

@@ -47,24 +47,6 @@ function Filter(props) {
   ];
   
 
-  const fetchLocations = () => {
-    fetch(process.env.REACT_APP_RENT_SERVICE_URL + '/getLocations', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': profile.token,
-        },
-        }).then(res => res.json())
-        .then(res => {
-          console.log(res);
-          if(res.statusCode != 200) {
-            alert(res.message)
-          }
-          setLocations(locations => [{id:-1, city:"No city chosen"}, ...res.data]);
-        }
-        )
-        .catch(error => console.error('Error:', error));
-  }
 
   const fetchCompanies = () => {
     fetch(process.env.REACT_APP_RENT_SERVICE_URL + '/getCompanies', {
@@ -86,7 +68,8 @@ function Filter(props) {
   }
 
   useEffect(() => {
-    fetchLocations();
+    props.fetchLocations().
+    then(res => {setLocations(locations => [{id:-1, city:"No city chosen"}, ...res]);});
     fetchCompanies();
   }, []);
 

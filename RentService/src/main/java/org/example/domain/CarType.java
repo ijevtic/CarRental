@@ -10,8 +10,8 @@ public class CarType {
 
     public static final Map<ECarType, Long> typeMap = new HashMap<ECarType,Long>() {{
         put(ECarType.SUV, 1L);
-        put(ECarType.SEDAN, 2L);
-        put(ECarType.HATCHBACK, 3L);
+        put(ECarType.Sedan, 2L);
+        put(ECarType.Hatchback, 3L);
     }};
 
     @Id

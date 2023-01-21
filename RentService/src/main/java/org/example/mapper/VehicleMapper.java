@@ -45,7 +45,7 @@ public class VehicleMapper {
         vehicleDto.setTypeName(vehicle.getCarModel().getCarType().getTypeName());
         vehicleDto.setCompanyName(vehicle.getCarModel().getCompany().getCompanyName());
         vehicleDto.setPrice(vehicle.getCarModel().getPrice());
-
+        vehicleDto.setModelName(vehicle.getCarModel().getModelName());
         return vehicleDto;
     }
 

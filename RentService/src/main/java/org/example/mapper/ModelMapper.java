@@ -31,8 +31,9 @@ public class ModelMapper {
 
     public EditModelDto carModelToCarModelDto(CarModel carModel) {
         EditModelDto modelDto = new EditModelDto();
+        modelDto.setId(carModel.getId());
         modelDto.setModelName(carModel.getModelName());
-        modelDto.setCarType(carModel.getCarType().toString());
+        modelDto.setCarType(carModel.getCarType().getTypeName());
         modelDto.setPrice(carModel.getPrice());
         return modelDto;
     }

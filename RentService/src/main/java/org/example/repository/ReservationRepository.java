@@ -18,4 +18,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Optional<Reservation> findReservationById(Long id);
 
     List<Reservation> findAllByClientId(Long clientId);
+
+    @Query("select r from Reservation r join Vehicle v on r.vehicle = v join CarModel m on v.carModel = m where m.company = :company")
+    List<Reservation> findAllByCompany(Company company);
 }

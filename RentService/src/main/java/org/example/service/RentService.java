@@ -12,10 +12,13 @@ import java.util.List;
 public interface RentService {
     ServiceResponse<Boolean> addCompany(CreateCompanyDto createCompanyDto);
     ServiceResponse<Long> getCompanyId(String companyName);
+    ServiceResponse<EditCompanyDto> getCompanyInfo(Long companyId);
     ServiceResponse<List<LocationDto>> getLocations();
     ServiceResponse<List<EditCompanyDto>> getCompanies();
     ServiceResponse<Boolean> editCompanyDesc(String jwt, EditCompanyDto editCompanyDto);
     ServiceResponse<Boolean> addModel(String jwt, AddModelDto addModelDto);
+    ServiceResponse<List<VehicleDtoFull>> getVehicles(String jwt);
+    ServiceResponse<List<EditModelDto>> getCompanyModels(String jwt);
     ServiceResponse<Boolean> changeModel(String jwt, EditModelDto addModelDto);
     ServiceResponse<Boolean> addVehicle(String jwt, AddVehicleDto addVehicleDto);
     ServiceResponse<Boolean> changeVehicle(String jwt, ChangeVehicleDto changeVehicleDto);
@@ -25,6 +28,8 @@ public interface RentService {
     ServiceResponse<List<FilterInterval>> filterVehicles(VehicleFilter vehicleFilter);
 
     ServiceResponse<List<ReservationDtoFull>> getUserReservations(String jwt);
+    ServiceResponse<List<ReservationDtoFull>> getCompanyReservations(String jwt);
+
     ServiceResponse<List<GetVehicleDto>> getAvailableVehiclesDto(FindVehiclesDto findVehiclesDto);
     ServiceResponse<Boolean> addReview(String jwt, ReviewDto reviewDto);
 }

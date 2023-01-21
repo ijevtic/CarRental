@@ -18,6 +18,9 @@ public interface VehicleRepository  extends JpaRepository<Vehicle, Long> {
 
     Optional<Vehicle> findVehicleById(Long id);
 
+    @Query("select v from Vehicle v join CarModel m on v.carModel = m where m.company = :company")
+    List<Vehicle> findVehicleByCompany(Company company);
+
     @Modifying
     @Query("update Vehicle v set v.location = :location where v.id = :id")
     void updateVehicle(Long id, Location location);
