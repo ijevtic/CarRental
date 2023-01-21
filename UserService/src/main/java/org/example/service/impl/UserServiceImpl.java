@@ -236,6 +236,8 @@ public class UserServiceImpl implements UserService {
             return new ServiceResponse<>(false, "user not found", 404);
         }
         Pair<UserChangeDto, Boolean> info = userMapper.mergeUserChangeDto(userOldDto, userChangeDto);
+        System.out.println("aaa");
+        System.out.println(userOldDto.getPassword() + " " + userChangeDto.getPassword());
         UserChangeDto u = info.getFirst();
         userRepository.updateUser(userInfo.getSecond(), u.getEmail(),u.getUsername(), u.getFirstName(),
                 u.getLastName(), u.getPassword(), u.getPhoneNumber(), u.getBirthDate(), u.getPassportNumber());

@@ -66,6 +66,7 @@ public class UserMapper {
         userChangeDto.setPassportNumber(user.getPassportNumber());
         userChangeDto.setBirthDate(user.getBirthDate());
         userChangeDto.setPhoneNumber(user.getPhoneNumber());
+        userChangeDto.setPassword(user.getPassword());
         return userChangeDto;
     }
 

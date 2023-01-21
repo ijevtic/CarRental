@@ -4,6 +4,7 @@ INSERT INTO role (id, description, name) VALUES (1, 'This is admin', 'ADMIN'), (
 
 INSERT INTO user (id, email, username, password, state_id, role_id, total_rent_days) VALUES (2, 'admin@admin.com', 'admin', '12345678', 1, 1, 0);
 
+INSERT INTO user (id, email, username, password, state_id, role_id, company_id, total_rent_days) VALUES (7, 'ivan7@gmail.com', 'ivanM', '12345678', 1, 3, 1,0);
 INSERT INTO user (id, email, username, password, state_id, role_id, total_rent_days) VALUES (8, 'ivan8@gmail.com', 'ivan8', '12345678', 1, 2, 0);
 
 INSERT INTO user_rank (id, rank_name, min_days, max_days, discount_amount) VALUES (1, "BRONZE", 0, 5, 0.1),

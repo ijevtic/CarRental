@@ -7,6 +7,24 @@ public class FilterInterval {
     private String locationName;
     private Long modelId;
     private Long locationId;
+    private String companyName;
+    private String typeName;
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
 
     public String getModelName() {
         return modelName;

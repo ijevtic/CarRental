@@ -45,6 +45,7 @@ public class RentServiceImplementation implements RentService {
     private ModelMapper modelMapper;
     private VehicleMapper vehicleMapper;
     private ReservationMapper reservationMapper;
+    private LocationMapper locationMapper;
     private TokenService tokenService;
     private RestTemplate userServiceRestTemplate;
     private JmsTemplate jmsTemplate;
@@ -60,7 +61,8 @@ public class RentServiceImplementation implements RentService {
                                      RestTemplate userServiceRestTemplate, ReservationRepository reservationRepository,
                                      ReservationMapper reservationMapper, JmsTemplate jmsTemplate,
                                      ReviewMapper reviewMapper, ReviewRepository reviewRepository,
-                                     MessageHelper messageHelper, @Value("${async.notifications}") String notificationQueue) {
+                                     MessageHelper messageHelper, @Value("${async.notifications}") String notificationQueue,
+                                     LocationMapper locationMapper) {
         this.companyRepository = companyRepository;
         this.modelRepository = modelRepository;
         this.carTypeRepository = carTypeRepository;
@@ -78,6 +80,7 @@ public class RentServiceImplementation implements RentService {
         this.notificationQueue = notificationQueue;
         this.reviewRepository = reviewRepository;
         this.reviewMapper = reviewMapper;
+        this.locationMapper = locationMapper;
     }
 
     public CarType getCarType(String carType) {
@@ -106,6 +109,20 @@ public class RentServiceImplementation implements RentService {
             return new ServiceResponse<>(null, "Company with that name does not exist", 400);
         }
         return new ServiceResponse<>(company.getId(), "Company found", 200);
+    }
+
+    @Override
+    public ServiceResponse<List<LocationDto>> getLocations() {
+        List<LocationDto> locationDtos = locationRepository.findAll().stream().map(locationMapper::locationToLocationDto)
+                .collect(Collectors.toList());
+        return new ServiceResponse<>(locationDtos, "Locations found", 200);
+    }
+
+    @Override
+    public ServiceResponse<List<EditCompanyDto>> getCompanies() {
+        List<EditCompanyDto> companyDtos = companyRepository.findAll().stream().map(companyMapper::companyToEditCompanyDto)
+                .collect(Collectors.toList());
+        return new ServiceResponse<>(companyDtos, "Companies found", 200);
     }
 
     @Override
@@ -209,6 +226,8 @@ public class RentServiceImplementation implements RentService {
     //TODO start date posle end date
     @Override
     public ServiceResponse<Boolean> addReservation(String jwt, AddReservationDto input) {
+        System.out.println(input);
+
         Long userId = tokenService.getUserId(jwt);
 
         ResponseEntity<ServiceResponse<RentUserDto>> response = null;
@@ -307,7 +326,7 @@ public class RentServiceImplementation implements RentService {
 
     @Override
     public ServiceResponse<List<FilterInterval>> filterVehicles(VehicleFilter vehicleFilter) {
-        List<VehicleDto> vehicles = vehicleRepository.findAll().stream().
+        List<VehicleDtoFull> vehicles = vehicleRepository.findAll().stream().
                 filter(v -> (vehicleFilter.getCarTypeId() == null || v.getCarModel().getCarType().getId().equals(vehicleFilter.getCarTypeId()))
                         && (vehicleFilter.getLocationId() == null || v.getLocation().getId().equals(vehicleFilter.getLocationId()))
                         && (vehicleFilter.getCompanyId() == null || v.getCarModel().getCompany().getId().equals(vehicleFilter.getCompanyId())))
@@ -321,9 +340,9 @@ public class RentServiceImplementation implements RentService {
                         }
                     }
                     return true;
-                }).map(vehicleMapper::vehicleToVehicleDto).collect(Collectors.toList());
+                }).map(vehicleMapper::vehicleToVehicleDtoFull).collect(Collectors.toList());
         List<FilterInterval> lista = new ArrayList<>();
-        for(VehicleDto vehicleDto : vehicles) {
+        for(VehicleDtoFull vehicleDto : vehicles) {
             FilterInterval filterInterval = vehicleMapper.vehicleDtoToFilterInterval(vehicleDto);
             if(!lista.contains(filterInterval)) {
                 lista.add(filterInterval);

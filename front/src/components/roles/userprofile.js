@@ -47,13 +47,14 @@ function UserProfile(props) {
         'Authorization': profile.jwt,
       },
       body: JSON.stringify({
-        "username": username,
-        "email": email,
-        "phoneNumber": phoneNumber,
-        "birthDate": birthDate,
-        "passportNumber": passportNumber,
-        "firstName": firstName,
-        "lastName": lastName,
+        "username": username != '' ? username : null,
+        "email": email != '' ? email : null,
+        "phoneNumber": phoneNumber != '' ? phoneNumber : null,
+        "birthDate": birthDate != '' ? birthDate : null,
+        "passportNumber": passportNumber != '' ? passportNumber : null,
+        "firstName": firstName != '' ? firstName : null,
+        "lastName": lastName != '' ? lastName : null,
+        "password": password != '' ? password : null,
       })
     }).then(res => res.json())
     .then(res => {

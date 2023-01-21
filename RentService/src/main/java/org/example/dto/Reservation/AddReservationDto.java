@@ -44,4 +44,14 @@ public class AddReservationDto {
     public void setEndTime(Integer endTime) {
         this.endTime = endTime;
     }
+
+    @Override
+    public String toString() {
+        return "AddReservationDto{" +
+                "carModelId=" + carModelId +
+                ", locationId=" + locationId +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
+    }
 }

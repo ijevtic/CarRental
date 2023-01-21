@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/rent")
 public class RentController {
@@ -41,6 +42,18 @@ public class RentController {
     public ResponseEntity<ServiceResponse<Long>> getCompany(@RequestHeader("Authorization") String authorization,
                                                                @PathVariable("name") String name){
         ServiceResponse<Long> response = rentService.getCompanyId(name);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @GetMapping("/getLocations")
+    public ResponseEntity<ServiceResponse<List<LocationDto>>> getLocations(){
+        ServiceResponse<List<LocationDto>> response = rentService.getLocations();
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @GetMapping("/getCompanies")
+    public ResponseEntity<ServiceResponse<List<EditCompanyDto>>> getCompanies(){
+        ServiceResponse<List<EditCompanyDto>> response = rentService.getCompanies();
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
@@ -105,7 +118,7 @@ public class RentController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    @GetMapping("/filterVehicles")
+    @PostMapping("/filterVehicles")
     @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
     public ResponseEntity<ServiceResponse<List<FilterInterval>>> filterVehicles(@RequestHeader("Authorization") String authorization,
                                                                                 @RequestBody @Valid VehicleFilter vehicleFilter){

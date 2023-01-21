@@ -11,6 +11,8 @@ import java.util.List;
 public interface RentService {
     ServiceResponse<Boolean> addCompany(CreateCompanyDto createCompanyDto);
     ServiceResponse<Long> getCompanyId(String companyName);
+    ServiceResponse<List<LocationDto>> getLocations();
+    ServiceResponse<List<EditCompanyDto>> getCompanies();
     ServiceResponse<Boolean> editCompanyDesc(String jwt, EditCompanyDto editCompanyDto);
     ServiceResponse<Boolean> addModel(String jwt, AddModelDto addModelDto);
     ServiceResponse<Boolean> changeModel(String jwt, EditModelDto addModelDto);

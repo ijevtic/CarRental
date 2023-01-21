@@ -6,6 +6,7 @@ import org.example.domain.Vehicle;
 import org.example.dto.AddVehicleDto;
 import org.example.dto.Vehicle.FilterInterval;
 import org.example.dto.Vehicle.VehicleDto;
+import org.example.dto.Vehicle.VehicleDtoFull;
 import org.example.repository.LocationRepository;
 import org.example.repository.ModelRepository;
 import org.springframework.stereotype.Component;
@@ -36,10 +37,22 @@ public class VehicleMapper {
         return vehicleDto;
     }
 
-    public FilterInterval vehicleDtoToFilterInterval(VehicleDto vehicleDto) {
+    public VehicleDtoFull vehicleToVehicleDtoFull(Vehicle vehicle) {
+        VehicleDtoFull vehicleDto = new VehicleDtoFull();
+        vehicleDto.setId(vehicle.getId());
+        vehicleDto.setModelId(vehicle.getCarModel().getId());
+        vehicleDto.setLocationId(vehicle.getLocation().getId());
+        vehicleDto.setTypeName(vehicle.getCarModel().getCarType().getTypeName());
+        vehicleDto.setCompanyName(vehicle.getCarModel().getCompany().getCompanyName());
+        return vehicleDto;
+    }
+
+    public FilterInterval vehicleDtoToFilterInterval(VehicleDtoFull vehicleDto) {
         FilterInterval filterInterval = new FilterInterval();
         filterInterval.setLocationId(vehicleDto.getLocationId());
         filterInterval.setModelId(vehicleDto.getModelId());
+        filterInterval.setCompanyName(vehicleDto.getCompanyName());
+        filterInterval.setTypeName(vehicleDto.getTypeName());
         Location location = locationRepository.getLocationById(vehicleDto.getLocationId()).orElse(null);
         if(location != null) {
             filterInterval.setLocationName(location.getCity());

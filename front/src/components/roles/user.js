@@ -6,6 +6,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import styled from 'styled-components';
 import 'react-tabs/style/react-tabs.css';
 import { UserProfile } from './userprofile';
+import { Filter } from './filter';
 
 function User(props) {
   const [profile, setProfile] = useRecoilState(profileInfo);
@@ -34,7 +35,7 @@ function User(props) {
           <UserProfile fetchUser={props.fetchUser}/>
         </TabPanel>
         <TabPanel>
-          <h2>Any content 2</h2>
+          <Filter />
         </TabPanel>
       </Tabs>
     </div>

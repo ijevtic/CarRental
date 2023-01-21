@@ -12,3 +12,7 @@ INSERT INTO reservation (id,start_time, end_time, vehicle_id, client_id) values 
 INSERT INTO reservation (id,start_time, end_time, vehicle_id, client_id) values (2,30,40,1,8);
 insert into review (id, comment, mark, reservation_id) values (1, "nice", 5, 2);
 INSERT INTO reservation (id,start_time, end_time, vehicle_id, client_id) values (3,30,40,1,10);
+
+
+INSERT INTO company (id, company_name, description) values (1, "Firma Firmic", "firmasto"),
+                                                           (2, "Ozbiljno ime kompanije", "firmasticno");
