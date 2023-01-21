@@ -3,6 +3,7 @@ package org.example.controller;
 import org.example.dto.*;
 import org.example.dto.Reservation.AddReservationDto;
 import org.example.dto.Reservation.RemoveReservationDto;
+import org.example.dto.Reservation.ReservationDtoFull;
 import org.example.dto.Vehicle.ChangeVehicleDto;
 import org.example.dto.Vehicle.FilterInterval;
 import org.example.dto.Vehicle.VehicleDto;
@@ -125,6 +126,14 @@ public class RentController {
         ServiceResponse<List<FilterInterval>> response = rentService.filterVehicles(vehicleFilter);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
+
+    @GetMapping("/getUserReservations")
+    @CheckSecurity(roles = {"ADMIN", "USER"})
+    public ResponseEntity<ServiceResponse<List<ReservationDtoFull>>> getUserReservations(@RequestHeader("Authorization") String authorization){
+        ServiceResponse<List<ReservationDtoFull>> response = rentService.getUserReservations(authorization);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
     @PostMapping("/addReview")
     @CheckSecurity(roles = {"USER"})
     public ResponseEntity<ServiceResponse<Boolean>> addReview(@RequestHeader("Authorization") String authorization,

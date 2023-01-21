@@ -35,7 +35,14 @@ function UserProfile(props) {
       if(res.statusCode != 200) {
         return;
       }
-      setRank(res.data.rankName);
+      setProfile((profile) => {
+        return({
+          ...profile,
+          rank: res.data
+        });
+      })
+      console.log(res.data)
+      setRank(res.data);
     })
   }, []);
 
@@ -75,7 +82,7 @@ function UserProfile(props) {
       <p>Email: <b>{profile.data.email}</b> new Email: <input value={email} onChange={evt => setEmail(evt.target.value)} type="text" name="name" /></p>
       <p>PhoneNumber: <b>{profile.data.phoneNumber}</b> new Phone number: <input value={phoneNumber} onChange={evt => setPhoneNumber(evt.target.value)} type="text" name="name" /></p>
       <p>totalRentDays: <b>{profile.data.totalRentDays}</b></p>
-      <p>rank: <b>{rank}</b></p>
+      <p>rank: <b>{rank.rankName}</b></p>
       <button onClick={changeProfile}>button</button>
     </div>
   )

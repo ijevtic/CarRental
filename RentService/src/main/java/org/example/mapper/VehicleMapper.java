@@ -44,6 +44,8 @@ public class VehicleMapper {
         vehicleDto.setLocationId(vehicle.getLocation().getId());
         vehicleDto.setTypeName(vehicle.getCarModel().getCarType().getTypeName());
         vehicleDto.setCompanyName(vehicle.getCarModel().getCompany().getCompanyName());
+        vehicleDto.setPrice(vehicle.getCarModel().getPrice());
+
         return vehicleDto;
     }
 
@@ -53,6 +55,7 @@ public class VehicleMapper {
         filterInterval.setModelId(vehicleDto.getModelId());
         filterInterval.setCompanyName(vehicleDto.getCompanyName());
         filterInterval.setTypeName(vehicleDto.getTypeName());
+        filterInterval.setPrice(vehicleDto.getPrice());
         Location location = locationRepository.getLocationById(vehicleDto.getLocationId()).orElse(null);
         if(location != null) {
             filterInterval.setLocationName(location.getCity());

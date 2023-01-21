@@ -38,4 +38,12 @@ public class Vehicle {
         this.carModel = carModel;
     }
 
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "id=" + id +
+                ", carModel=" + carModel +
+                ", location=" + location +
+                '}';
+    }
 }

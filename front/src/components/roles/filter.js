@@ -110,8 +110,8 @@ function Filter(props) {
       body: JSON.stringify({
         "companyId": companySelected < 0 ? null : companySelected,
         "locationId": locationSelected < 0 ? null : locationSelected,
-        "startTime": 0,
-        "endTime": 500
+        'startTime': startTime.unix(),
+        'endTime': endTime.unix(),
       })
     }).then(res => res.json())
     .then(res => {
@@ -151,7 +151,7 @@ function Filter(props) {
         'carModelId': filteredOptions[index].modelId,
         // 'startTime': startTime.unix(),
         // 'endTime': endTime.unix(),
-        'startTime': endTime.unix(),
+        'startTime': startTime.unix(),
         'endTime': endTime.unix(),
 
         'locationId': locationSelected < 0 ? null : locationSelected,
@@ -210,6 +210,7 @@ function Filter(props) {
             <TableCell align="right">Location</TableCell>
             <TableCell align="right">Type</TableCell>
             <TableCell align="right">Price</TableCell>
+            <TableCell align="right">Price with membership discount</TableCell>
             <TableCell align="right"></TableCell>
           </TableRow>
         </TableHead>
@@ -225,8 +226,9 @@ function Filter(props) {
               <TableCell align="right">{row.companyName}</TableCell>
               <TableCell align="right">{row.locationName}</TableCell>
               <TableCell align="right">{row.typeName}</TableCell>
-              <TableCell align="right">0</TableCell>
-              <TableCell align="right"><Button variant="outlined" onClick={() => reserve(index)}>reserve</Button></TableCell>
+              <TableCell align="right">{row.price}</TableCell>
+              <TableCell align="right">{profile.rank != null ? row.price*(1-profile.rank.discountAmount) : row.price}</TableCell>
+              <TableCell align="right">{}<Button variant="outlined" onClick={() => reserve(index)}>reserve</Button></TableCell>
             </TableRow>
           ))}
         </TableBody>

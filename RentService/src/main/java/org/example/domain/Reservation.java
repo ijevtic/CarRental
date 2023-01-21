@@ -52,4 +52,15 @@ public class Reservation {
     public void setClientId(Long clientId) {
         this.clientId = clientId;
     }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id=" + id +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", vehicle=" + vehicle +
+                ", clientId=" + clientId +
+                '}';
+    }
 }

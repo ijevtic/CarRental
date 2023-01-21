@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import 'react-tabs/style/react-tabs.css';
 import { UserProfile } from './userprofile';
 import { Filter } from './filter';
+import { Reservations } from './reservations';
 
 function User(props) {
   const [profile, setProfile] = useRecoilState(profileInfo);
@@ -29,6 +30,7 @@ function User(props) {
         <TabList>
           <Tab>Profile</Tab>
           <Tab>Filter</Tab>
+          <Tab>Reservations</Tab>
         </TabList>
 
         <TabPanel>
@@ -36,6 +38,9 @@ function User(props) {
         </TabPanel>
         <TabPanel>
           <Filter />
+        </TabPanel>
+        <TabPanel>
+        <Reservations />
         </TabPanel>
       </Tabs>
     </div>

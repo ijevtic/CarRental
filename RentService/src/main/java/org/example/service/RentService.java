@@ -3,6 +3,7 @@ package org.example.service;
 import org.example.dto.*;
 import org.example.dto.Reservation.AddReservationDto;
 import org.example.dto.Reservation.RemoveReservationDto;
+import org.example.dto.Reservation.ReservationDtoFull;
 import org.example.dto.Vehicle.*;
 import org.example.util.ServiceResponse;
 
@@ -22,6 +23,8 @@ public interface RentService {
     ServiceResponse<Boolean> addReservation(String jwt, AddReservationDto addReservationDto);
     ServiceResponse<Boolean> removeReservation(String jwt, RemoveReservationDto addReservationDto);
     ServiceResponse<List<FilterInterval>> filterVehicles(VehicleFilter vehicleFilter);
+
+    ServiceResponse<List<ReservationDtoFull>> getUserReservations(String jwt);
     ServiceResponse<List<GetVehicleDto>> getAvailableVehiclesDto(FindVehiclesDto findVehiclesDto);
     ServiceResponse<Boolean> addReview(String jwt, ReviewDto reviewDto);
 }

@@ -8,6 +8,7 @@ import org.example.domain.*;
 import org.example.dto.*;
 import org.example.dto.Reservation.AddReservationDto;
 import org.example.dto.Reservation.RemoveReservationDto;
+import org.example.dto.Reservation.ReservationDtoFull;
 import org.example.dto.Vehicle.*;
 import org.example.helper.MessageHelper;
 import org.example.mapper.*;
@@ -334,11 +335,14 @@ public class RentServiceImplementation implements RentService {
                     List<Reservation> reservations = reservationRepository.findAllByVehicle(v);
                     if(reservations.isEmpty()) { return true; }
                     for(Reservation r : reservations) {
+                        System.out.println(r);
+                        System.out.println(vehicleFilter.getStartTime() + " " + vehicleFilter.getEndTime());
                         if(!(r.getStartTime() < vehicleFilter.getStartTime() && r.getEndTime() < vehicleFilter.getStartTime())
                             && !(r.getStartTime() > vehicleFilter.getEndTime() && r.getEndTime() > vehicleFilter.getEndTime())){
                             return false;
                         }
                     }
+                    System.out.println(v);
                     return true;
                 }).map(vehicleMapper::vehicleToVehicleDtoFull).collect(Collectors.toList());
         List<FilterInterval> lista = new ArrayList<>();
@@ -349,6 +353,14 @@ public class RentServiceImplementation implements RentService {
             }
         }
         return new ServiceResponse<>(lista, "Vehicles found", 200);
+    }
+
+    @Override
+    public ServiceResponse<List<ReservationDtoFull>> getUserReservations(String jwt) {
+        Long userId = tokenService.getUserId(jwt);
+        List<ReservationDtoFull> reservations = reservationRepository.findAllByClientId(userId).stream().
+                map(reservationMapper::reservationToReservationMapFull).collect(Collectors.toList());
+        return new ServiceResponse<>(reservations, "Reservations found", 200);
     }
 
 
