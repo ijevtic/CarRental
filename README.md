@@ -1,1 +1,1 @@
-Car rental system with 4 microservices and react frontend.
+Car rental system with 4 microservices and react frontend. Spring boot backend in Java, synchronous and asynchronous communication between services, eureka and api gateway, retry pattern, custom security annotation.
