@@ -197,4 +197,23 @@ public class UserMapper {
         rentUserDto.setUsername(user.getUsername());
         return rentUserDto;
     }
+
+    public UserAllData userToUserAllData(User user) {
+        UserAllData userAllData = new UserAllData();
+        userAllData.setId(user.getId());
+        userAllData.setEmail(user.getEmail());
+        userAllData.setFirstName(user.getFirstName());
+        userAllData.setLastName(user.getLastName());
+        userAllData.setUsername(user.getUsername());
+        userAllData.setPassword(user.getPassword());
+        userAllData.setRoleId(user.getRole().getId());
+        userAllData.setStateId(user.getState().getId());
+        userAllData.setPassportNumber(user.getPassportNumber());
+        userAllData.setBirthDate(user.getBirthDate());
+        userAllData.setTotalRentDays(user.getTotalRentDays());
+        userAllData.setCompanyId(user.getCompanyId());
+        userAllData.setPhoneNumber(user.getPhoneNumber());
+        userAllData.setStartWorkDate(user.getStartWorkDate());
+        return userAllData;
+    }
 }

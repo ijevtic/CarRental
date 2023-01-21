@@ -94,6 +94,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ServiceResponse<UserAllData> getUserData(String jwt) {
+        Long userId = tokenService.getUserId(jwt);
+        UserAllData userDto = userRepository.findById(userId).map(userMapper::userToUserAllData).orElse(null);
+        if (userDto == null) {
+            return new ServiceResponse<>(null, "user not found", 404);
+        }
+        return new ServiceResponse<>(userDto, "user found", 200);
+    }
+
+    @Override
     public ServiceResponse<RentUserDto> findManagerEmailFromCompany(Long companyId) {
         RentUserDto user = userRepository.findUserByCompanyId(companyId).map(userMapper::userToRentUserDto).orElse(null);
         if (user == null) {

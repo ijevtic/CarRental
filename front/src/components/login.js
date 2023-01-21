@@ -11,9 +11,8 @@ function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setProfile({'loggedIn':'true', 'jwt': null, 'role': null})
 
-        fetch(process.env.REACT_APP_USER_SERVICE_URL+'/login', {
+        fetch(process.env.REACT_APP_USER_SERVICE_URL + '/login', {
           'method': 'POST',
           // 'mode': 'no-cors',
           headers: {
@@ -31,7 +30,7 @@ function Login() {
             alert(res.message)
           }
           else {
-            setProfile({'loggedIn':'true', 'jwt': res.data.token, 'role': res.data.role})
+            setProfile({'loggedIn':'true', 'jwt': 'Bearer '+res.data.token, 'role': res.data.role, 'data': null})
             navigate('/')
           }
         })

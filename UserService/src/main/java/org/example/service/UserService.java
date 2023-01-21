@@ -15,6 +15,8 @@ public interface UserService {
 
     ServiceResponse<RentUserDto> findUserEmail(Long userId);
 
+    ServiceResponse<UserAllData> getUserData(String jwt);
+
     ServiceResponse<RentUserDto> findManagerEmailFromCompany(Long userId);
 
     ServiceResponse<RankDto> getUserRank(Long userId);

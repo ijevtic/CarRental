@@ -6,5 +6,6 @@ export const profileInfo = atom({
     'loggedIn':'false',
     'jwt': null,
     'role': null,
+    'data': null,
   }
 });

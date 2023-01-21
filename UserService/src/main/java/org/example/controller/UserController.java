@@ -100,6 +100,14 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Find user")
+    @GetMapping("/getUserData")
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
+    public ResponseEntity<ServiceResponse<UserAllData>> getUserData(@RequestHeader("Authorization") String authorization) {
+        ServiceResponse<UserAllData> response = userService.getUserData(authorization);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
     @ApiOperation(value = "Find manager email for company")
     @GetMapping("/findManagerEmail/{id}")
     @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})

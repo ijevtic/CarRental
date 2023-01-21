@@ -10,7 +10,7 @@ function Logout(props) {
   const [profile, setProfile] = useRecoilState(profileInfo);
   const navigate = useNavigate();
   const logout = () => {
-    setProfile({'loggedIn':'false', 'jwt': null, 'role': 'null'})
+    setProfile({'loggedIn':'false', 'jwt': null, 'role': null, 'data': null})
     navigate('/login');
   }
 
