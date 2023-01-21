@@ -295,7 +295,7 @@ public class UserServiceImpl implements UserService {
         }
         claims.put("time", System.currentTimeMillis() / 1000);
         //Generate token
-        TokenResponseDto tokenResponseDto = new TokenResponseDto(tokenService.generate(claims));
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(user.getRole().getName(), tokenService.generate(claims));
         return new ServiceResponse<>(tokenResponseDto, "Login successful", 200);
     }
 
