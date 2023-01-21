@@ -11,11 +11,9 @@ import org.example.dto.*;
 import org.example.dto.rent.RentUserDto;
 import org.example.listener.helper.MessageHelper;
 import org.example.mapper.PendingUserMapper;
+import org.example.mapper.RankMapper;
 import org.example.mapper.UserMapper;
-import org.example.repository.PendingUserRepository;
-import org.example.repository.RoleRepository;
-import org.example.repository.StateRepository;
-import org.example.repository.UserRepository;
+import org.example.repository.*;
 import org.example.security.service.TokenService;
 import org.example.service.UserService;
 import org.example.util.ServiceResponse;
@@ -41,8 +39,10 @@ public class UserServiceImpl implements UserService {
     private TokenService tokenService;
     private UserRepository userRepository;
     private PendingUserRepository pendingUserRepository;
+    private RankRepository rankRepository;
     private UserMapper userMapper;
     private PendingUserMapper pendingUserMapper;
+    private RankMapper rankMapper;
     private RoleRepository roleRepository;
     private StateRepository stateRepository;
     private RestTemplate rentServiceRestTemplate;
@@ -51,14 +51,16 @@ public class UserServiceImpl implements UserService {
     private String notificationQueue;
 
     public UserServiceImpl(TokenService tokenService, UserRepository userRepository, PendingUserRepository pendingUserRepository,
-                           UserMapper userMapper, PendingUserMapper pendingUserMapper, RoleRepository roleRepository,
-                           StateRepository stateRepository, RestTemplate rentServiceRestTemplate, JmsTemplate jmsTemplate,
-                           MessageHelper messageHelper, @Value("${async.notifications}") String notificationQueue) {
+                           RankRepository rankRepository, UserMapper userMapper, PendingUserMapper pendingUserMapper, RankMapper rankMapper,
+                           RoleRepository roleRepository, StateRepository stateRepository, RestTemplate rentServiceRestTemplate,
+                           JmsTemplate jmsTemplate, MessageHelper messageHelper, @Value("${async.notifications}") String notificationQueue) {
         this.tokenService = tokenService;
         this.userRepository = userRepository;
         this.pendingUserRepository = pendingUserRepository;
+        this.rankRepository = rankRepository;
         this.userMapper = userMapper;
         this.pendingUserMapper = pendingUserMapper;
+        this.rankMapper = rankMapper;
         this.roleRepository = roleRepository;
         this.stateRepository = stateRepository;
         this.rentServiceRestTemplate = rentServiceRestTemplate;
@@ -98,6 +100,30 @@ public class UserServiceImpl implements UserService {
             return new ServiceResponse<>(null, "user not found", 404);
         }
         return new ServiceResponse<>(user, "user found", 200);
+    }
+
+    @Override
+    public ServiceResponse<RankDto> getUserRank(Long userId) {
+        User u = userRepository.findById(userId).orElse(null);
+        if (u == null) {
+            return new ServiceResponse<>(null, "user not found", 404);
+        }
+        RankDto rankDto = rankRepository.getRankForRentDaysNumber(u.getTotalRentDays()).map(rankMapper::rankToDto).orElse(null);
+//        if (rankDto == null) {
+//            return new ServiceResponse<>(null, "rank not found", 404);
+//        }
+        return new ServiceResponse<>(rankDto, "rank found", 200);
+    }
+
+    @Override
+    public ServiceResponse<Boolean> changeRentDays(Long userId, Integer daysDiff) {
+        User u = userRepository.findById(userId).orElse(null);
+        if (u == null) {
+            return new ServiceResponse<>(false, "user not found", 404);
+        }
+        u.setTotalRentDays(u.getTotalRentDays() + daysDiff);
+        userRepository.updateRentDays(u.getId(), u.getTotalRentDays());
+        return new ServiceResponse<>(true, "rent days changed", 200);
     }
 
     private State findStateById(EState state) {

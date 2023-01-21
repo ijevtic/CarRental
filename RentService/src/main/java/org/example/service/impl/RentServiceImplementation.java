@@ -21,6 +21,7 @@ import org.example.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.util.Pair;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
@@ -262,9 +263,7 @@ public class RentServiceImplementation implements RentService {
                 reservation.getVehicle().getCarModel().getCompany().getId(), reservation.getVehicle().getCarModel().getCompany().getCompanyName(),
                 input.getStartTime(), input.getEndTime(), reservationId));
         jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
-//        System.out.println(q.getData());
-//        System.out.println(client);
-//        System.out.println(manager);
+        updateUserRentDays(userId, input.getEndTime() - input.getStartTime());
         return new ServiceResponse<>(true, "Reservation created", 201);
 
     }
@@ -299,6 +298,7 @@ public class RentServiceImplementation implements RentService {
                 reservation.getVehicle().getCarModel().getCompany().getId(), reservation.getVehicle().getCarModel().getCompany().getCompanyName(),
                 reservation.getStartTime(), reservation.getEndTime(), removeReservationDto.getId()));
         jmsTemplate.convertAndSend(notificationQueue, messageHelper.createTextMessage(q));
+        updateUserRentDays(client.getId(), reservation.getStartTime() - reservation.getEndTime());
         return new ServiceResponse<>(true, "Reservation deleted", 200);
     }
 
@@ -346,5 +346,16 @@ public class RentServiceImplementation implements RentService {
             return null;
         }
         return manager;
+    }
+
+    private void updateUserRentDays(Long userId, Integer timeDiff) {
+        Integer daysDiff = timeDiff / 86400;
+        HttpEntity<Integer> request = new HttpEntity<>(daysDiff);
+        try {
+            userServiceRestTemplate.exchange("/changeRentDays/" + userId,
+                    HttpMethod.POST, request, new ParameterizedTypeReference<ServiceResponse<Boolean>>() {});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

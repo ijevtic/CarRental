@@ -54,6 +54,24 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Get user rank")
+    @GetMapping("/getRank/{id}")
+    @CheckSecurity(roles = {"ADMIN", "USER"})
+    public ResponseEntity<ServiceResponse<RankDto>> getUserRank(@RequestHeader("Authorization") String authorization
+            , @PathVariable("id") Long userId) {
+        ServiceResponse<RankDto> response = userService.getUserRank(userId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "Change number of rent days")
+    @PostMapping("/changeRentDays/{id}")
+    @CheckSecurity(roles = {"ADMIN"})
+    public ResponseEntity<ServiceResponse<Boolean>> changeRentDays(@RequestHeader("Authorization") String authorization
+            , @PathVariable("id") Long userId, @RequestBody Integer daysDiff) {
+        ServiceResponse<Boolean> response = userService.changeRentDays(userId, daysDiff);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
     @ApiOperation(value = "Ban user")
     @PostMapping("/ban/{username}")
     @CheckSecurity(roles = {"ADMIN"})

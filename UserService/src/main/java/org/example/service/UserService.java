@@ -17,6 +17,10 @@ public interface UserService {
 
     ServiceResponse<RentUserDto> findManagerEmailFromCompany(Long userId);
 
+    ServiceResponse<RankDto> getUserRank(Long userId);
+
+    ServiceResponse<Boolean> changeRentDays(Long userId, Integer daysDiff);
+
     ServiceResponse<Boolean> banUser(String username);
 
     ServiceResponse<Boolean> unbanUser(String username);
