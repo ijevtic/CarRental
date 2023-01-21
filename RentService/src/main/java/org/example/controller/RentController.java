@@ -112,6 +112,13 @@ public class RentController {
         ServiceResponse<List<FilterInterval>> response = rentService.filterVehicles(vehicleFilter);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
+    @PostMapping("/addReview")
+    @CheckSecurity(roles = {"USER"})
+    public ResponseEntity<ServiceResponse<Boolean>> addReview(@RequestHeader("Authorization") String authorization,
+                                                              @RequestBody ReviewDto reviewDto){
+        ServiceResponse<Boolean> response = rentService.addReview(authorization, reviewDto);
+        return new ResponseEntity<>(response,HttpStatus.valueOf(response.getStatusCode()));
+    }
 
 //    public ResponseEntity<ServiceResponse<Boolean>> removeVehicle(@RequestBody RemoveVehicleDto removeVehicleDto){
 //        ServiceResponse<Boolean> response = rentService.removeVehicle(removeVehicleDto);

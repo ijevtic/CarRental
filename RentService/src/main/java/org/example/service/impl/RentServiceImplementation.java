@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +52,8 @@ public class RentServiceImplementation implements RentService {
     private JmsTemplate jmsTemplate;
     private MessageHelper messageHelper;
     private String notificationQueue;
+    private ReviewRepository reviewRepository;
+    private ReviewMapper reviewMapper;
 
     public RentServiceImplementation(CompanyRepository companyRepository, ModelRepository modelRepository,
                                      CarTypeRepository carTypeRepository, VehicleRepository vehicleRepository,
@@ -58,6 +61,7 @@ public class RentServiceImplementation implements RentService {
                                      ModelMapper modelMapper, VehicleMapper vehicleMapper, TokenService tokenService,
                                      RestTemplate userServiceRestTemplate, ReservationRepository reservationRepository,
                                      ReservationMapper reservationMapper, JmsTemplate jmsTemplate,
+                                     ReviewMapper reviewMapper, ReviewRepository reviewRepository,
                                      MessageHelper messageHelper, @Value("${async.notifications}") String notificationQueue) {
         this.companyRepository = companyRepository;
         this.modelRepository = modelRepository;
@@ -74,6 +78,8 @@ public class RentServiceImplementation implements RentService {
         this.jmsTemplate = jmsTemplate;
         this.messageHelper = messageHelper;
         this.notificationQueue = notificationQueue;
+        this.reviewRepository = reviewRepository;
+        this.reviewMapper = reviewMapper;
     }
 
     public CarType getCarType(String carType) {
@@ -346,5 +352,24 @@ public class RentServiceImplementation implements RentService {
             return null;
         }
         return manager;
+    }
+    @Override
+    public ServiceResponse<Boolean> addReview(String jwt, ReviewDto reviewDto){
+        Long userId = tokenService.getUserId(jwt);
+        Reservation reservation = reservationRepository.findReservationById(reviewDto.getReservationId()).orElse(null);
+        if(reservation == null) return new ServiceResponse<>(false, "given Reservation does not exist", 400);
+        if(!Objects.equals(userId, reservation.getClientId())) return new ServiceResponse<>(false, "User with the given id did not make the given reservation", 400);
+        Review review = null;
+        review = reviewRepository.findReviewByReservation(reservation).orElse(null);
+        if(review != null) return new ServiceResponse<>(false, "Review for given Reservation already exists", 404);
+        if(reservation == null) {
+            return new ServiceResponse<>(false, "Reservation not found", 404);
+        }
+
+        review = reviewMapper.reviewDtoToReview(reviewDto, userId);
+
+
+        reviewRepository.save(review);
+        return new ServiceResponse<>(true, "Review created", 201);
     }
 }

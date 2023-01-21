@@ -21,4 +21,5 @@ public interface RentService {
     ServiceResponse<Boolean> removeReservation(String jwt, RemoveReservationDto addReservationDto);
     ServiceResponse<List<FilterInterval>> filterVehicles(VehicleFilter vehicleFilter);
     ServiceResponse<List<GetVehicleDto>> getAvailableVehiclesDto(FindVehiclesDto findVehiclesDto);
+    ServiceResponse<Boolean> addReview(String jwt, ReviewDto reviewDto);
 }

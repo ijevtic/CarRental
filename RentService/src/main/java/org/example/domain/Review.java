@@ -1,15 +1,15 @@
 package org.example.domain;
 
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
+@Entity
 public class Review {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(optional = false)
-    private Company company;
+    @OneToOne(optional = false)
+    private Reservation reservation;
     private String comment;
-    private String city;
     //Ocena od 1 do 5
     private int mark;
 
@@ -21,14 +21,6 @@ public class Review {
         this.id = id;
     }
 
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
-
     public String getComment() {
         return comment;
     }
@@ -37,12 +29,12 @@ public class Review {
         this.comment = comment;
     }
 
-    public String getCity() {
-        return city;
+    public Reservation getReservation() {
+        return reservation;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
     }
 
     public int getMark() {
